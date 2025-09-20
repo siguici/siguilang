@@ -1,44 +1,49 @@
-# ⚡ VHP - Vlang Hypertext Preprocessor
+# ⚡ The **Sigui** Programming Language
 
-**VHP** is a modern, lightweight, and fast web scripting engine inspired by PHP,
-written entirely in [Vlang](https://vlang.io).
-
-It preserves much of PHP’s familiar syntax, while offering improved performance,
-better type safety, and native integration with V’s ecosystem —
-without relying on the Zend Engine.
+A modern, high-performance programming language
+with PHP-inspired syntax and TypeScript-like strong typing.
+No tags, no semicolons—just code naturally. Powered by [Vlang](https://vlang.io).
 
 ---
 
 ## 🚀 Features
 
-- ✅ Familiar PHP-like syntax
-- ✅ Strong/optional typing
-- ✅ Fast execution via native V
-- ✅ Built-in HTTP server (no Apache/Nginx)
-- ✅ `.vhp` file support (like `.php`)
-- ✅ Dynamic interpretation or ahead-of-time (AOT) compilation
-- ✅ Lightweight runtime (no external dependencies)
-- ✅ Native routing, templating, and middleware
-- ✅ Interop with V modules
+- ✅ PHP-inspired syntax: simple, readable, and natural  
+- ✅ Strong, optional, or dynamic typing like TypeScript  
+- ✅ Fast execution via native V  
+- ✅ Lightweight runtime (no external dependencies)  
+- ✅ `.sg` file support  
+- ✅ Web and general-purpose programming  
+- ✅ Built-in HTTP server  
+- ✅ Native routing, templating, and middleware  
+- ✅ Interoperable with PHP, TypeScript, and Vlang (focus on PHP for now)
+
+---
+
+## 🌟 Future Potential
+
+While **SiguiLang** currently focuses on PHP compatibility,
+its design allows for future interpretation in TypeScript and Vlang,
+opening possibilities for cross-platform scripting and integration.
 
 ---
 
 ## 📦 Installation
 
-> ⚠️ **Vlang is required.*  
+> ⚠️ **Vlang is required**
 > [Install V](https://vlang.io/)
 
 ```bash
-git clone https://github.com/siguici/vhp
-cd vhp
-v run . hello.vhp
-````
+git clone https://github.com/siguici/siguilang sg
+cd sg
+v run . samples/hello.sg
+```
 
 Or build it:
 
 ```bash
 v -prod .
-./vhp run hello.vhp
+./sg run hello.sg
 ```
 
 ---
@@ -46,19 +51,13 @@ v -prod .
 ## 📂 Project Structure
 
 ```tree
-vhp/
-├── core/               # Parser, Interpreter, Compiler
+siguilang/
+├── src/               # Parser, Interpreter, Compiler
 │   ├── parser.v
 │   ├── interpreter.v
 │   └── compiler.v
-├── server/             # HTTP Server & Routing
-│   ├── router.v
-│   ├── middleware.v
-│   └── response.v
-├── templates/          # Template Engine
-├── examples/           # Sample `.vhp` files
-├── stdlib/             # Standard functions (echo, strlen, etc.)
-├── vhp.v               # Entry point
+├── examples/          # Sample `.sg` files
+├── LICENSE.md
 └── README.md
 ```
 
@@ -66,23 +65,21 @@ vhp/
 
 ## 🧪 Quick Start
 
-Create a file `index.vhp`:
+Create a file `hello.sg`:
 
-```php
-<?php
-echo "Hello from VHP!";
-?>
+```sg
+print("Hello from SiguiLang!")
 ```
 
 Run the server:
 
 ```bash
-./vhp serve
+./sg serve
 ```
 
 Then open in your browser:
 
-[http://localhost:8080/index.vhp](http://localhost:8080/index.vhp)
+[http://localhost:8080/hello.sg](http://localhost:8080/hello.sg)
 
 ---
 
@@ -91,61 +88,58 @@ Then open in your browser:
 Basic config is done via CLI flags:
 
 ```bash
-./vhp serve --port 8080 --root ./examples
+./sg serve --port 8080 --root ./examples
 ```
 
 ---
 
 ## 📄 Language Overview
 
-VHP supports a PHP-inspired syntax with modern Vlang concepts:
+SiguiLang supports a PHP-inspired syntax with modern TypeScript-like typing:
 
-```php
-<?php
+```sg
 fn greet(name: string): string {
-    return "Hello, $name!";
+    return "Hello, $name!"
 }
 
-echo greet("World");
-?>
+print(greet("World"))
 ```
 
 ### Available Features
 
-- `echo`, `print`
-- Functions, conditionals, loops
-- Variables with `$` prefix (optional)
-- HTML + VHP mixed templates
-- Basic type annotations
-- Access to `$_GET`, `$_POST`, `$_SERVER`, etc.
+* `print`, `echo`
+* Functions, conditionals, loops
+* Optional `$` prefix for variables
+* HTML + SiguiLang mixed templates
+* Strong, optional, or dynamic typing
+* Built-in access to request data and server environment
 
 ---
 
 ## 🔧 Roadmap
 
-- [x] Basic `.vhp` parser and runtime
-- [x] Built-in HTTP server
-- [x] Template rendering
-- [ ] AOT compilation to `.v` or bytecode
-- [ ] VM-based execution model (optional)
-- [ ] Standard library expansion
-- [ ] PHP function compatibility layer
-- [ ] WebSocket support
-- [ ] Sessions & authentication
-- [ ] CLI tool for scaffolding & dev server
+* [x] Core parser and runtime
+* [x] Built-in HTTP server
+* [x] Template rendering
+* [ ] Ahead-of-time (AOT) compilation
+* [ ] VM-based execution model (optional)
+* [ ] Standard library expansion
+* [ ] WebSocket support
+* [ ] Sessions & authentication
+* [ ] CLI tool for scaffolding & dev server
 
 ---
 
 ## 🧠 Philosophy
 
-VHP is not a clone of PHP. It's a reimagined alternative:
+SiguiLang is not PHP. It's a **modern reimagining**:
 
-- **No Zend Engine**
-- **No bloated runtime**
-- **Clean, typed, structured code**
-- **Modern features with old-school simplicity**
+* **No tags required** (`<?`, `?>`)
+* **No semicolons needed** (line breaks suffice)
+* **Clean, typed, structured code**
+* **Modern features with minimal syntax**
 
-> Think of it as *“PHP, if it were designed in 2025, in Vlang.”*
+> Think of it as *“PHP, redesigned with TypeScript’s typing and powered by Vlang.”*
 
 ---
 
@@ -153,21 +147,13 @@ VHP is not a clone of PHP. It's a reimagined alternative:
 
 Pull requests, ideas, and discussions are welcome!
 
-- 🛠 Fork this repo
-- 🔧 Make changes
-- ✅ Ensure it compiles (`v run vhp.v`)
-- 📬 Submit a PR
+* 🛠 Fork this repo
+* 🔧 Make changes
+* ✅ Ensure it compiles (`v run .`)
+* 📬 Submit a PR
 
 ---
 
 ## 📜 License
 
-MIT © \[Your Name]
-
----
-
-## 🔗 Resources
-
-- [V Language](https://vlang.io)
-- [PHP Manual](https://www.php.net/manual/en/)
-- [Building interpreters in V](https://github.com/vlang/v/issues/4827)
+[MIT](./LICENSE.md) © [Sigui Kessé Emmanuel](https://github.com/siguici)
