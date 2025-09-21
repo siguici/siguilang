@@ -1,0 +1,27 @@
+name: CI
+
+on:
+  [push, pull_request]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: 👷 CI on ${{ matrix.operating-system }}
+    runs-on: ${{ matrix.operating-system }}
+    strategy:
+      matrix:
+        operating-system: [ubuntu-latest]
+    steps:
+      - name: 📥 Checkout (V tests)
+        uses: actions/checkout@v5
+
+      - name: 🔧 Setup Vlang
+        uses: siguici/setup-v@v0
+
+      - name: ✅ Verify Code Format
+        run: v fmt -verify .
+
+      - name: 🧪 Run V Tests
+        run: v test .
