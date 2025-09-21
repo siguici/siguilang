@@ -1,0 +1,51 @@
+name: CD
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - 'v*'
+    paths:
+      - .github/workflows/*
+      - src/**
+      - '*.md'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        arch: [amd64, arm64]
+
+    name: 🚀 CD on ${{ matrix.os }} ${{ matrix.arch }}
+
+    steps:
+      - name: 🚚 Get latest code
+        uses: actions/checkout@v5
+
+      - name: 🔧 Setup Vlang
+        uses: siguici/setup-v@v0
+
+      - name: 📦 Build binary
+        run: |
+          mkdir -p bin
+          OUTPUT="bin/sg_${RUNNER_OS}_${{ matrix.arch }}${RUNNER_OS == 'windows' && '.exe' || ''}"
+          echo "Building $OUTPUT..."
+          v -prod -arch ${{ matrix.arch }} . -o $OUTPUT
+          zip -j "${OUTPUT}.zip" "$OUTPUT"
+          sha256sum "${OUTPUT}.zip" > "${OUTPUT}.zip.sha256"
+
+      - name: 📂 Upload binaries
+        id: gh_release
+        uses: softprops/action-gh-release@v2
+        if: github.ref_type == 'tag'
+        with:
+          files: |
+            bin/*.zip
+            bin/*.zip.sha256
+            *.md
