@@ -34,7 +34,8 @@ jobs:
       - name: 🔧 Setup Vlang
         uses: siguici/setup-v@v0
 
-      - name: 📦 Build binary
+      - name: 📦 Build for Unix
+        if: runner.os != 'Windows'
         run: |
           mkdir -p bin
           EXT=""
@@ -46,6 +47,18 @@ jobs:
           v -prod -arch ${{ matrix.arch }} . -o $OUTPUT
           zip -j "${OUTPUT}.zip" "$OUTPUT"
           sha256sum "${OUTPUT}.zip" > "${OUTPUT}.zip.sha256"
+
+      - name: 📦 Build for Windows
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path bin
+          $ext = ".exe"
+          $output = "bin\sg_${env:RUNNER_OS}_${{ matrix.arch }}$ext"
+          Write-Host "Building $output..."
+          v -native -os windows -arch ${{ matrix.arch }} . -o $output
+          Compress-Archive -Path $output -DestinationPath "$output.zip"
+          Get-FileHash "$output.zip" -Algorithm SHA256 | ForEach-Object { $_.Hash } | Set-Content "$output.zip.sha256"
 
       - name: 📂 Upload binaries
         id: gh_release
