@@ -34,7 +34,11 @@ jobs:
       - name: 📦 Build binary
         run: |
           mkdir -p bin
-          OUTPUT="bin/sg_${RUNNER_OS}_${{ matrix.arch }}${RUNNER_OS == 'windows' && '.exe' || ''}"
+          EXT=""
+          if [ "$RUNNER_OS" = "windows" ]; then
+            EXT=".exe"
+          fi
+          OUTPUT="bin/sg_${RUNNER_OS}_${{ matrix.arch }}${EXT}"
           echo "Building $OUTPUT..."
           v -prod -arch ${{ matrix.arch }} . -o $OUTPUT
           zip -j "${OUTPUT}.zip" "$OUTPUT"
