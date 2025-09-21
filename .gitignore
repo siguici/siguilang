@@ -2,6 +2,8 @@
 siguilang
 sg
 main
+*.zip
+*.zip.sha256
 *.exe
 *.exe~
 *.so
