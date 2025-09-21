@@ -46,20 +46,18 @@ pub fn main() {
 				println(term.hex(color, '└────────────────────────────────────────────┘'))
 				println('')
 				println('Type ${q} or ${exit_i} or press ${ctrl_c} to quit.')
+				mut code := ''
 				for {
-					if mut code := os.input_opt('❯ ') {
-						if code !in ['\\q', 'exit()'] {
+					if mut line := os.input_opt('❯ ') {
+						if line !in ['\\q', 'exit()'] {
 							ran = true
-							if !code.starts_with('<?') {
-								if !code.starts_with('print') {
-									code = 'print ${code}\n'
-								}
-								code = '<?\n${code}'
+							mut line_code := code
+							code += '\n${line}'
+							if !line.starts_with('print ') {
+								line += 'print ${line}\n'
 							}
-							if !code.ends_with('?>') {
-								code += '\n?>'
-							}
-							run(code)
+							line_code += '\n${line}'
+							run('<? ${line_code} ?>')
 							continue
 						}
 						break
