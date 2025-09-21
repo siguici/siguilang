@@ -15,25 +15,28 @@ pub fn run_repl() bool {
 	exit_i := term.bg_red(term.white(term.bold(' exit() ')))
 	ctrl_c := term.bg_red(term.white(' Ctrl+C '))
 	manifest := vmod.decode(@VMOD_FILE) or { panic(err) }
-	println(term.bold(term.hex(color, '┌────────────────────────────────────────────┐')))
-	print(term.hex(color, '│'))
-	print(term.hex(accent, '    Welcome to the ${term.bg_hex(color, term.white(' Sigui '))}'))
-	print(term.bg_white(term.hex(color, ' Lang ')))
-	print(term.hex(accent, ' REPL 🐉'))
-	println(term.hex(color, '    │'))
-	println(term.hex(color, '│                                            │'))
-	println(term.hex(color, '│ The Sigui Programming Language (SiguiLang) │'))
-	println(term.hex(color, '│ A modern, high-performance scripting lang  │'))
-	println(term.hex(color, '│ with PHP-inspired syntax & TS-like typing. │'))
-	println(term.hex(color, '│                                            │'))
-	println(term.hex(color, '│ No tags, no semicolons—just code naturally.│'))
-	println(term.hex(color, '│                                            │'))
-	print(term.hex(color, '│'))
-	print(term.hex(accent, '   ${manifest.name} v${manifest.version}') + ' — experimental build.')
-	println(term.hex(color, '   │'))
-	println(term.hex(color, '└────────────────────────────────────────────┘'))
-	println('')
-	println('Type ${q} or ${exit_i} or press ${ctrl_c} to quit.')
+	lines := [
+		term.bold(term.hex(color, ' ┌────────────────────────────────────────────┐')),
+		term.hex(color, ' │') +
+			term.hex(accent, '    Welcome to the ${term.bg_hex(color, term.white(' Sigui '))}') +
+			term.bg_white(term.hex(color, ' Lang ')) + term.hex(accent, ' REPL 🐉') +
+			term.hex(color, '    │'),
+		term.hex(color, ' │                                            │'),
+		term.hex(color, ' │ The Sigui Programming Language (SiguiLang) │'),
+		term.hex(color, ' │ A modern, high-performance scripting lang  │'),
+		term.hex(color, ' │ with PHP-inspired syntax & TS-like typing. │'),
+		term.hex(color, ' │                                            │'),
+		term.hex(color, ' │ No tags, no semicolons—just code naturally.│'),
+		term.hex(color, ' │                                            │'),
+		term.hex(color, ' │') +
+			term.hex(accent, '   ${manifest.name} v${manifest.version} — experimental build.') +
+			term.hex(color, '   │'),
+		term.hex(color, ' └────────────────────────────────────────────┘'),
+		'',
+		'Type ${q} or ${exit_i} or press ${ctrl_c} to quit.',
+	]
+
+	println(center_block_lines(lines))
 	mut code := ''
 	mut rl := readline.Readline{}
 	for {
