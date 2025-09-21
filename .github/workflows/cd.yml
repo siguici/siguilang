@@ -56,7 +56,7 @@ jobs:
           $ext = ".exe"
           $output = "bin\sg_${env:RUNNER_OS}_${{ matrix.arch }}$ext"
           Write-Host "Building $output..."
-          v -native -os windows -arch ${{ matrix.arch }} . -o $output
+          v -prod -arch ${{ matrix.arch }} . -o $output
           Compress-Archive -Path $output -DestinationPath "$output.zip"
           Get-FileHash "$output.zip" -Algorithm SHA256 | ForEach-Object { $_.Hash } | Set-Content "$output.zip.sha256"
 
