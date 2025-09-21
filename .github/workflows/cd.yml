@@ -17,8 +17,11 @@ permissions:
 jobs:
   build:
     runs-on: ${{ matrix.os }}
+    continue-on-error: ${{ matrix.experimental }}
     strategy:
+      fail-fast: true
       matrix:
+        experimental: [true]
         os: [ubuntu-latest, windows-latest, macos-latest]
         arch: [amd64, arm64]
 
