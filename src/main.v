@@ -16,6 +16,8 @@ pub fn main() {
 		description: 'Run a script or a code'
 		usage:       '[file_or_code]'
 		execute:     fn (cmd cli.Command) ! {
+			term.erase_clear()
+			term.set_cursor_position(x: 0, y: 0)
 			term.set_tab_title('SiguiLang')
 			term.set_terminal_title('SiguiLang')
 			println(term.bold(term.hex(color, logo)))
