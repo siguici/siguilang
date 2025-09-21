@@ -23,9 +23,9 @@ pub fn run_repl() bool {
 	lines := [
 		term.bold(term.hex(color, ' ┌────────────────────────────────────────────┐')),
 		term.hex(color, ' │') +
-			term.hex(accent, '    Welcome to the ${term.bg_hex(color, term.white(' Sigui '))}') +
-			term.bg_white(term.hex(color, ' Lang ')) + term.hex(accent, ' REPL 🐉') +
-			term.hex(color, '    │'),
+			term.hex(accent, '     Welcome to the ${term.bg_hex(accent, term.white(' Sigui'))}') +
+			term.bg_white(term.hex(accent, 'Lang ')) + term.hex(accent, ' REPL 🐉') +
+			term.hex(color, '     │'),
 		term.hex(color, ' │                                            │'),
 		term.hex(color, ' │ The Sigui Programming Language (SiguiLang) │'),
 		term.hex(color, ' │ A modern, high-performance scripting lang  │'),
