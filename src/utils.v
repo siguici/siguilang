@@ -1,10 +1,9 @@
 module main
 
 import term
-import os
 import regex
 
-const logo = os.read_file('logo.txt') or { '' }
+const logo = $embed_file('logo.txt').to_string()
 
 const color = 59064 // #00E6B8
 const accent = 16744258 // #FF8C42
