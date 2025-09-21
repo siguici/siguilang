@@ -11,21 +11,35 @@ const logo = os.read_file('logo.txt') or { '' }
 const color = 59064 // #00E6B8
 const accent = 16744258 // #FF8C42
 
-fn center_line(text string) string {
+fn center_line(line string) string {
 	width, _ := term.get_terminal_size()
-	mut padding := (width - text.len) / 2
+	mut padding := (width - line.len) / 2
 	if padding < 0 {
 		padding = 0
 	}
-	return ' '.repeat(padding) + text
+	return ' '.repeat(padding) + line
 }
 
-fn center_text(block string) string {
+fn center_text(text string) string {
 	mut result := []string{}
-	for line in block.split('\n') {
+	for line in text.split('\n') {
 		result << center_line(line)
 	}
 	return result.join('\n')
+}
+
+fn center_block(block string) string {
+	lines := block.split('\n')
+	mut ordered_lines := lines.clone()
+	ordered_lines.sort_by_len()
+	max_len := ordered_lines.last().len
+
+	mut centered_lines := []string{}
+	for line in lines {
+		centered_lines << center_line(line + ' '.repeat(max_len - line.len))
+	}
+
+	return centered_lines.join('\n')
 }
 
 pub fn main() {
@@ -38,7 +52,7 @@ pub fn main() {
 			term.set_cursor_position(x: 0, y: 0)
 			term.set_tab_title('SiguiLang')
 			term.set_terminal_title('SiguiLang')
-			println(term.bold(term.hex(color, center_text(logo))))
+			println(term.bold(term.hex(color, center_block(logo))))
 
 			args := cmd.args
 			if args.len < 1 {
