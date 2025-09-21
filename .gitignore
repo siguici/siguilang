@@ -1,6 +1,7 @@
 # Binaries for programs and plugins
+siguilang
+sg
 main
-vhp
 *.exe
 *.exe~
 *.so
