@@ -4,6 +4,11 @@ import term
 import v.vmod
 import readline
 
+fn quit_repl(msg string) {
+	println('\n${msg}\nGoodbye 👋')
+	exit(0)
+}
+
 pub fn run_repl() bool {
 	mut ran := false
 	term.erase_clear()
@@ -40,20 +45,25 @@ pub fn run_repl() bool {
 	mut code := ''
 	mut rl := readline.Readline{}
 	for {
-		if mut line := rl.read_line('❯ ') {
-			if line !in ['\\q', 'exit()'] {
-				ran = true
-				mut line_code := code
-				code += '\n${line}'
-				if !line.starts_with('print ') {
-					line += 'print ${line}\n'
-				}
-				line_code += '\n${line}'
-				run('<? ${line_code} ?>')
-				continue
-			}
+		mut line := rl.read_line('❯ ') or {
+			quit_repl('Program interrupted.')
 			break
 		}
+
+		if line !in ['\\q', 'exit()'] {
+			ran = true
+			mut line_code := code
+			code += '\n${line}'
+			if !line.starts_with('print ') {
+				line += 'print ${line}\n'
+			}
+			line_code += '\n${line}'
+			run('<? ${line_code} ?>')
+			continue
+		}
+
+		quit_repl('Exiting REPL...')
+		break
 	}
 	return ran
 }
