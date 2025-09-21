@@ -11,6 +11,23 @@ const logo = os.read_file('logo.txt') or { '' }
 const color = 59064 // #00E6B8
 const accent = 16744258 // #FF8C42
 
+fn center_line(text string) string {
+	width, _ := term.get_terminal_size()
+	mut padding := (width - text.len) / 2
+	if padding < 0 {
+		padding = 0
+	}
+	return ' '.repeat(padding) + text
+}
+
+fn center_text(block string) string {
+	mut result := []string{}
+	for line in block.split('\n') {
+		result << center_line(line)
+	}
+	return result.join('\n')
+}
+
 pub fn main() {
 	mut app := cli.Command{
 		name:        'siguilang'
@@ -21,7 +38,7 @@ pub fn main() {
 			term.set_cursor_position(x: 0, y: 0)
 			term.set_tab_title('SiguiLang')
 			term.set_terminal_title('SiguiLang')
-			println(term.bold(term.hex(color, logo)))
+			println(term.bold(term.hex(color, center_text(logo))))
 
 			args := cmd.args
 			if args.len < 1 {
