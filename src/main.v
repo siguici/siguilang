@@ -17,6 +17,7 @@ pub fn main() {
 		usage:       '[file_or_code]'
 		execute:     fn (cmd cli.Command) ! {
 			term.set_tab_title('SiguiLang')
+			term.set_terminal_title('SiguiLang')
 			println(term.bold(term.hex(color, logo)))
 
 			args := cmd.args
