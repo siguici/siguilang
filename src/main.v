@@ -4,6 +4,7 @@ import os
 import cli
 import term
 import v.vmod
+import readline
 
 const logo = os.read_file('logo.txt') or { '' }
 
@@ -50,8 +51,9 @@ pub fn main() {
 				println('')
 				println('Type ${q} or ${exit_i} or press ${ctrl_c} to quit.')
 				mut code := ''
+				mut rl := readline.Readline{}
 				for {
-					if mut line := os.input_opt('❯ ') {
+					if mut line := rl.read_line('❯ ') {
 						if line !in ['\\q', 'exit()'] {
 							ran = true
 							mut line_code := code
