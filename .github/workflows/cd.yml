@@ -38,11 +38,7 @@ jobs:
         if: runner.os != 'Windows'
         run: |
           mkdir -p bin
-          EXT=""
-          if [ "$RUNNER_OS" = "windows" ]; then
-            EXT=".exe"
-          fi
-          OUTPUT="bin/sg_${RUNNER_OS}_${{ matrix.arch }}${EXT}"
+          OUTPUT="bin/sg_${RUNNER_OS}_${{ matrix.arch }}"
           echo "Building $OUTPUT..."
           v -prod -arch ${{ matrix.arch }} . -o $OUTPUT
           zip -j "${OUTPUT}.zip" "$OUTPUT"
@@ -53,8 +49,7 @@ jobs:
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force -Path bin
-          $ext = ".exe"
-          $output = "bin\sg_${env:RUNNER_OS}_${{ matrix.arch }}$ext"
+          $output = "bin\sg_${env:RUNNER_OS}_${{ matrix.arch }}.exe"
           Write-Host "Building $output..."
           v -prod -arch ${{ matrix.arch }} . -o $output
           Compress-Archive -Path $output -DestinationPath "$output.zip"
