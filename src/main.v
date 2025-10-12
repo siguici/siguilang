@@ -6,7 +6,7 @@ import term
 
 pub fn main() {
 	mut app := cli.Command{
-		name:        'siguilang'
+		name:        'skelang'
 		description: 'Run a script or a code'
 		usage:       '[file_or_code]'
 		execute:     fn (cmd cli.Command) ! {

@@ -1,4 +1,4 @@
-# ⚡ The **Sigui** Programming Language
+# ⚡ The **Ske** Programming Language
 
 A modern, high-performance programming language
 with PHP-inspired syntax and TypeScript-like strong typing.
@@ -12,7 +12,7 @@ No tags, no semicolons—just code naturally. Powered by [Vlang](https://vlang.i
 - ✅ Strong, optional, or dynamic typing like TypeScript  
 - ✅ Fast execution via native V  
 - ✅ Lightweight runtime (no external dependencies)  
-- ✅ `.sg` file support  
+- ✅ `.ske` file support  
 - ✅ Web and general-purpose programming  
 - ✅ Built-in HTTP server  
 - ✅ Native routing, templating, and middleware  
@@ -22,7 +22,7 @@ No tags, no semicolons—just code naturally. Powered by [Vlang](https://vlang.i
 
 ## 🌟 Future Potential
 
-While **SiguiLang** currently focuses on PHP compatibility,
+While **SkeLang** currently focuses on PHP compatibility,
 its design allows for future interpretation in TypeScript and Vlang,
 opening possibilities for cross-platform scripting and integration.
 
@@ -34,16 +34,16 @@ opening possibilities for cross-platform scripting and integration.
 > [Install V](https://vlang.io/)
 
 ```bash
-git clone https://github.com/siguici/siguilang sg
-cd sg
-v run . samples/hello.sg
+git clone https://github.com/skeci/skelang ske
+cd ske
+v run . samples/hello.ske
 ```
 
 Or build it:
 
 ```bash
 v -prod .
-./sg run hello.sg
+./ske run hello.ske
 ```
 
 ---
@@ -51,12 +51,12 @@ v -prod .
 ## 📂 Project Structure
 
 ```tree
-siguilang/
+skelang/
 ├── src/               # Parser, Interpreter, Compiler
 │   ├── parser.v
 │   ├── interpreter.v
 │   └── compiler.v
-├── examples/          # Sample `.sg` files
+├── examples/          # Sample `.ske` files
 ├── LICENSE.md
 └── README.md
 ```
@@ -65,21 +65,21 @@ siguilang/
 
 ## 🧪 Quick Start
 
-Create a file `hello.sg`:
+Create a file `hello.ske`:
 
-```sg
-print("Hello from SiguiLang!")
+```ske
+print("Hello from SkeLang!")
 ```
 
 Run the server:
 
 ```bash
-./sg serve
+./ske serve
 ```
 
 Then open in your browser:
 
-[http://localhost:8080/hello.sg](http://localhost:8080/hello.sg)
+[http://localhost:8080/hello.ske](http://localhost:8080/hello.ske)
 
 ---
 
@@ -88,16 +88,16 @@ Then open in your browser:
 Basic config is done via CLI flags:
 
 ```bash
-./sg serve --port 8080 --root ./examples
+./ske serve --port 8080 --root ./examples
 ```
 
 ---
 
 ## 📄 Language Overview
 
-SiguiLang supports a PHP-inspired syntax with modern TypeScript-like typing:
+SkeLang supports a PHP-inspired syntax with modern TypeScript-like typing:
 
-```sg
+```ske
 fn greet(name: string): string {
     return "Hello, $name!"
 }
@@ -110,7 +110,7 @@ print(greet("World"))
 * `print`, `echo`
 * Functions, conditionals, loops
 * Optional `$` prefix for variables
-* HTML + SiguiLang mixed templates
+* HTML + SkeLang mixed templates
 * Strong, optional, or dynamic typing
 * Built-in access to request data and server environment
 
@@ -132,7 +132,7 @@ print(greet("World"))
 
 ## 🧠 Philosophy
 
-SiguiLang is not PHP. It's a **modern reimagining**:
+SkeLang is not PHP. It's a **modern reimagining**:
 
 * **No tags required** (`<?`, `?>`)
 * **No semicolons needed** (line breaks suffice)
@@ -156,4 +156,4 @@ Pull requests, ideas, and discussions are welcome!
 
 ## 📜 License
 
-[MIT](./LICENSE.md) © [Sigui Kessé Emmanuel](https://github.com/siguici)
+[MIT](./LICENSE.md) © [Ske Kessé Emmanuel](https://github.com/skeci)

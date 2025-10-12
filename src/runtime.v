@@ -4,8 +4,8 @@ import os
 
 pub fn run(code string) {
 	mut path := code
-	if !os.exists(path) && !path.ends_with('.phi') {
-		path += '.phi'
+	if !os.exists(path) && !path.ends_with('.ske') {
+		path += '.ske'
 	}
 
 	if os.is_file(path) {
