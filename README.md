@@ -22,7 +22,7 @@ No tags, no semicolons—just code naturally. Powered by [Vlang](https://vlang.i
 
 ## 🌟 Future Potential
 
-While **SkeLang** currently focuses on PHP compatibility,
+While **Ske** currently focuses on PHP compatibility,
 its design allows for future interpretation in TypeScript and Vlang,
 opening possibilities for cross-platform scripting and integration.
 
@@ -34,16 +34,17 @@ opening possibilities for cross-platform scripting and integration.
 > [Install V](https://vlang.io/)
 
 ```bash
-git clone https://github.com/skeci/skelang ske
+git clone https://github.com/siguici/ske
 cd ske
-v run . samples/hello.ske
+v .
+./ske example.ske
 ```
 
 Or build it:
 
 ```bash
 v -prod .
-./ske run hello.ske
+./ske example.ske
 ```
 
 ---
@@ -65,10 +66,10 @@ skelang/
 
 ## 🧪 Quick Start
 
-Create a file `hello.ske`:
+Create a file `example.ske`:
 
 ```ske
-print("Hello from SkeLang!")
+print("Hello from Ske!")
 ```
 
 Run the server:
@@ -79,7 +80,7 @@ Run the server:
 
 Then open in your browser:
 
-[http://localhost:8080/hello.ske](http://localhost:8080/hello.ske)
+[http://localhost:8080/example.ske](http://localhost:8080/example.ske)
 
 ---
 
@@ -95,7 +96,7 @@ Basic config is done via CLI flags:
 
 ## 📄 Language Overview
 
-SkeLang supports a PHP-inspired syntax with modern TypeScript-like typing:
+**Ske** supports a PHP-inspired syntax with modern TypeScript-like typing:
 
 ```ske
 fn greet(name: string): string {
@@ -107,37 +108,37 @@ print(greet("World"))
 
 ### Available Features
 
-* `print`, `echo`
-* Functions, conditionals, loops
-* Optional `$` prefix for variables
-* HTML + SkeLang mixed templates
-* Strong, optional, or dynamic typing
-* Built-in access to request data and server environment
+- `print`, `echo`
+- Functions, conditionals, loops
+- Optional `$` prefix for variables
+- HTML + SkeLang mixed templates
+- Strong, optional, or dynamic typing
+- Built-in access to request data and server environment
 
 ---
 
 ## 🔧 Roadmap
 
-* [x] Core parser and runtime
-* [x] Built-in HTTP server
-* [x] Template rendering
-* [ ] Ahead-of-time (AOT) compilation
-* [ ] VM-based execution model (optional)
-* [ ] Standard library expansion
-* [ ] WebSocket support
-* [ ] Sessions & authentication
-* [ ] CLI tool for scaffolding & dev server
+- [x] Core parser and runtime
+- [x] Built-in HTTP server
+- [x] Template rendering
+- [ ] Ahead-of-time (AOT) compilation
+- [ ] VM-based execution model (optional)
+- [ ] Standard library expansion
+- [ ] WebSocket support
+- [ ] Sessions & authentication
+- [ ] CLI tool for scaffolding & dev server
 
 ---
 
 ## 🧠 Philosophy
 
-SkeLang is not PHP. It's a **modern reimagining**:
+**Ske** is not PHP. It's a **modern reimagining**:
 
-* **No tags required** (`<?`, `?>`)
-* **No semicolons needed** (line breaks suffice)
-* **Clean, typed, structured code**
-* **Modern features with minimal syntax**
+- **No tags required** (`<?`, `?>`)
+- **No semicolons needed** (line breaks suffice)
+- **Clean, typed, structured code**
+- **Modern features with minimal syntax**
 
 > Think of it as *“PHP, redesigned with TypeScript’s typing and powered by Vlang.”*
 
@@ -147,10 +148,10 @@ SkeLang is not PHP. It's a **modern reimagining**:
 
 Pull requests, ideas, and discussions are welcome!
 
-* 🛠 Fork this repo
-* 🔧 Make changes
-* ✅ Ensure it compiles (`v run .`)
-* 📬 Submit a PR
+- 🛠 Fork this repo
+- 🔧 Make changes
+- ✅ Ensure it compiles (`v run .`)
+- 📬 Submit a PR
 
 ---
 
