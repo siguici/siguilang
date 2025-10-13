@@ -1,46 +1,44 @@
 # ⚡ The **Ske** Programming Language
 
-A modern, high-performance programming language
-with PHP-inspired syntax and TypeScript-like strong typing.
-No tags, no semicolons—just code naturally. Powered by [Vlang](https://vlang.io).
+**Ske** is a modern, high-performance programming language
+designed for simplicity, clarity, and expressive power.  
+Built with ❤️ in [Vlang](https://vlang.io).
 
 ---
 
 ## 🚀 Features
 
-- ✅ PHP-inspired syntax: simple, readable, and natural  
-- ✅ Strong, optional, or dynamic typing like TypeScript  
-- ✅ Fast execution via native V  
-- ✅ Lightweight runtime (no external dependencies)  
-- ✅ `.ske` file support  
-- ✅ Web and general-purpose programming  
+- ✅ Lightweight and fast by design  
+- ✅ Optional, strong, or dynamic typing  
+- ✅ Clean and minimal syntax  
+- ✅ `.ske` source files  
+- ✅ Web and general-purpose scripting  
 - ✅ Built-in HTTP server  
 - ✅ Native routing, templating, and middleware  
-- ✅ Interoperable with PHP, TypeScript, and Vlang (focus on PHP for now)
 
 ---
 
-## 🌟 Future Potential
+## 🌟 Vision
 
-While **Ske** currently focuses on PHP compatibility,
-its design allows for future interpretation in TypeScript and Vlang,
-opening possibilities for cross-platform scripting and integration.
+**Ske** redefines how code feels to write and read —
+expressive, concise, and powerful.  
+Its architecture is designed for **multi-runtime execution**,
+paving the way for native support in environments like TypeScript, PHP, and Vlang.
 
 ---
 
 ## 📦 Installation
 
-> ⚠️ **Vlang is required**
-> [Install V](https://vlang.io/)
+> ⚠️ **Requires [Vlang](https://vlang.io)**
 
 ```bash
 git clone https://github.com/siguici/ske
 cd ske
 v .
 ./ske example.ske
-```
+````
 
-Or build it:
+Or build for production:
 
 ```bash
 v -prod .
@@ -52,12 +50,12 @@ v -prod .
 ## 📂 Project Structure
 
 ```tree
-skelang/
+ske/
 ├── src/               # Parser, Interpreter, Compiler
 │   ├── parser.v
 │   ├── interpreter.v
 │   └── compiler.v
-├── examples/          # Sample `.ske` files
+├── examples/          # Example `.ske` files
 ├── LICENSE.md
 └── README.md
 ```
@@ -78,7 +76,7 @@ Run the server:
 ./ske serve
 ```
 
-Then open in your browser:
+Then open your browser:
 
 [http://localhost:8080/example.ske](http://localhost:8080/example.ske)
 
@@ -86,7 +84,7 @@ Then open in your browser:
 
 ## ⚙️ Configuration
 
-Basic config is done via CLI flags:
+Ske’s built-in server can be configured easily:
 
 ```bash
 ./ske serve --port 8080 --root ./examples
@@ -96,7 +94,7 @@ Basic config is done via CLI flags:
 
 ## 📄 Language Overview
 
-**Ske** supports a PHP-inspired syntax with modern TypeScript-like typing:
+**Ske** combines clarity and expressiveness in a clean syntax:
 
 ```ske
 fn greet(name: string): string {
@@ -106,14 +104,14 @@ fn greet(name: string): string {
 print(greet("World"))
 ```
 
-### Available Features
+### Language Features
 
 - `print`, `echo`
-- Functions, conditionals, loops
-- Optional `$` prefix for variables
-- HTML + SkeLang mixed templates
-- Strong, optional, or dynamic typing
-- Built-in access to request data and server environment
+- Functions, conditionals, and loops
+- Optional `$` variable prefix
+- Inline templates (HTML + Ske)
+- Optional and strong typing
+- Built-in access to HTTP and environment data
 
 ---
 
@@ -122,39 +120,40 @@ print(greet("World"))
 - [x] Core parser and runtime
 - [x] Built-in HTTP server
 - [x] Template rendering
-- [ ] Ahead-of-time (AOT) compilation
-- [ ] VM-based execution model (optional)
-- [ ] Standard library expansion
+- [ ] Ahead-of-time compilation
+- [ ] Optional VM execution model
+- [ ] Extended standard library
 - [ ] WebSocket support
-- [ ] Sessions & authentication
-- [ ] CLI tool for scaffolding & dev server
+- [ ] Session & authentication modules
+- [ ] CLI tooling for scaffolding and dev mode
 
 ---
 
 ## 🧠 Philosophy
 
-**Ske** is not PHP. It's a **modern reimagining**:
+**Ske** is about writing **natural, structured, and elegant code**.
 
-- **No tags required** (`<?`, `?>`)
-- **No semicolons needed** (line breaks suffice)
-- **Clean, typed, structured code**
-- **Modern features with minimal syntax**
+- No tags
+- No semicolons
+- Just code that feels right
 
-> Think of it as *“PHP, redesigned with TypeScript’s typing and powered by Vlang.”*
+A minimal language for a maximal experience.
+
+> Designed to be **clear to read**, **pleasant to write**, and **powerful to run**.
 
 ---
 
 ## 🤝 Contributing
 
-Pull requests, ideas, and discussions are welcome!
+We welcome contributions and ideas!
 
 - 🛠 Fork this repo
-- 🔧 Make changes
-- ✅ Ensure it compiles (`v run .`)
-- 📬 Submit a PR
+- 🔧 Make improvements
+- ✅ Test (`v run .`)
+- 📬 Open a pull request
 
 ---
 
 ## 📜 License
 
-[MIT](./LICENSE.md) © [Ske Kessé Emmanuel](https://github.com/skeci)
+[MIT](./LICENSE.md) © [Sigui Kessé Emmanuel](https://github.com/siguici)
