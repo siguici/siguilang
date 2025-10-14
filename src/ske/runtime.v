@@ -2,25 +2,42 @@ module ske
 
 import os
 
-pub fn run(code string) {
+@[params]
+pub struct RunParams {
+pub:
+	path string
+	root string
+}
+
+pub fn run(code string, params RunParams) {
 	mut path := code
 	if !os.exists(path) && !path.ends_with('.ske') {
 		path += '.ske'
 	}
 
-	if os.is_file(path) {
-		run_file(path)
+	if os.exists(path) {
+		run_path(path)
 	} else {
-		run_code(code: code)
+		run_code(code, params)
 	}
 }
 
-pub fn run_file(file string) {
-	code := os.read_file(file) or { panic(err) }
-	run_code(code: code, file: file)
+pub fn run_path(path string, params RunParams) {
+	if os.is_dir(path) {
+		for file in os.ls(path) or { []string{} } {
+			run_path(file, params)
+		}
+	} else {
+		run_file(path, params)
+	}
 }
 
-pub fn run_code(opts LexOptions) {
-	mut t := parse(lex(opts))
+pub fn run_file(file string, params RunParams) {
+	code := os.read_file(file) or { panic(err) }
+	run_code(code, path: file, root: params.root)
+}
+
+pub fn run_code(code string, params RunParams) {
+	mut t := parse(lex(code: code, file: params.path, dir: params.root))
 	interpret(mut t)
 }

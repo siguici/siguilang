@@ -5,10 +5,11 @@ pub struct LexOptions {
 pub:
 	code string
 	file string
+	dir  string
 }
 
 pub fn lex(options LexOptions) []Token {
-	mut l := new_lexer(input: options.code, file: options.file)
+	mut l := new_lexer(input: options.code, file: options.file, dir: options.dir)
 
 	return l.lex()
 }
@@ -22,6 +23,7 @@ pub struct Lexer {
 	Scanner
 pub:
 	file string
+	dir  string
 pub mut:
 	line int = 1
 	col  int = 1
@@ -31,6 +33,7 @@ pub mut:
 pub struct LexerOptions {
 	input string
 	file  string
+	dir   string
 	line  int = 1
 	col   int = 1
 }

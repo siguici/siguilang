@@ -35,7 +35,7 @@ pub fn Program.new() &Program {
 		execute:     fn (cmd cli.Command) ! {
 			if code := cmd.flags.get_string('eval') {
 				if code != '' {
-					ske.run_code(code: code)
+					ske.run_code(code, path: os.getwd())
 					return
 				}
 			}
@@ -47,7 +47,7 @@ pub fn Program.new() &Program {
 			if cmd.args.len > 0 {
 				for file_path in cmd.args {
 					if os.exists(file_path) {
-						ske.run_file(file_path)
+						ske.run_file(file_path, root: os.getwd())
 					} else {
 						eprintln(term.red('File ${file_path} not found'))
 					}
