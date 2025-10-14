@@ -32,7 +32,9 @@ pub fn (mut this Parser) parse() Program {
 pub fn (mut this Parser) parse_block(delimiters []TokenType) !&Block {
 	mut s := []Stmt{}
 	for (this.remaining() > 0 && !this.current().in(delimiters)) {
+		this.eat_any([.semicolon, .nl])
 		s << this.parse_stmt()!
+		this.eat_any([.semicolon, .nl])
 	}
 	if !(delimiters.len == 1 && TokenType.eof in delimiters) {
 		this.eat_any_or_fail(delimiters, '${tokens_to_str(delimiters)} expected at the end of block')!
@@ -41,7 +43,6 @@ pub fn (mut this Parser) parse_block(delimiters []TokenType) !&Block {
 }
 
 pub fn (mut this Parser) parse_stmt() !Stmt {
-	this.eat(.semicolon)
 	return if this.eat(.print) {
 		PrintStmt{this.parse_expr()!}
 	} else if this.eat(.if) {
