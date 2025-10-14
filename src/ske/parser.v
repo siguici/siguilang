@@ -135,7 +135,10 @@ pub fn (mut this Parser) parse_unary_expr() !Expr {
 }
 
 pub fn (mut this Parser) parse_literal_expr() !Expr {
-	t := this.next()
+	mut t := this.next()
+	for t.is(.whitespace) {
+		t = this.next()
+	}
 
 	if t.in([.number, .name, .string, .char, .backticks]) {
 		return LiteralExpr{t.name(), t.val}
