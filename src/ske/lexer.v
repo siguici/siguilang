@@ -1,7 +1,8 @@
 module ske
 
 @[params]
-struct LexOptions {
+pub struct LexOptions {
+pub:
 	code string
 	file string
 }
