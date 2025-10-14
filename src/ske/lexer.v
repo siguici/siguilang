@@ -48,7 +48,10 @@ pub fn (mut this Lexer) lex() []Token {
 	mut t := []Token{}
 
 	for this.next() != -1 && this.pos != this.ilen {
-		t << this.scan()
+		i := this.scan()
+		if !i.is(.whitespace) {
+			t << i
+		}
 	}
 
 	return t

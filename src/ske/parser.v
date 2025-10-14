@@ -136,9 +136,6 @@ pub fn (mut this Parser) parse_unary_expr() !Expr {
 
 pub fn (mut this Parser) parse_literal_expr() !Expr {
 	mut t := this.next()
-	for t.is(.whitespace) {
-		t = this.next()
-	}
 
 	if t.in([.number, .name, .string, .char, .backticks]) {
 		return LiteralExpr{t.name(), t.val}
@@ -169,6 +166,12 @@ pub fn (mut this Parser) parse_literal_expr() !Expr {
 	}
 
 	return error('Unexpected token ${t.val}${f} on line ${t.pos.line} at column ${t.pos.column}')
+}
+
+pub fn (mut this Parser) skip_whitespace() {
+	for this.current().is(.whitespace) {
+		this.advance()
+	}
 }
 
 pub fn (mut this Parser) eat(type TokenType) bool {
