@@ -370,6 +370,12 @@ pub fn (mut this Scanner) scan() Token {
 			}
 		}
 		else {
+			nl := this.scan_newline()
+			if nl.len >= 1 {
+				this.pos--
+				return this.tokenize_nl()
+			}
+
 			sp := this.scan_whitespace()
 			if sp.len >= 1 {
 				this.pos--
@@ -463,17 +469,25 @@ pub fn (mut this Scanner) scan_string(delimiter int) string {
 	return v
 }
 
+pub fn (mut this Scanner) scan_newline() string {
+	mut w := ''
+
+	for this.pos < this.ilen && this.current_is_new_line() {
+		this.line++
+		this.col = 1
+		w += this.current_str()
+		this.next()
+	}
+
+	return w
+}
+
 pub fn (mut this Scanner) scan_whitespace() string {
 	mut w := ''
 
-	for this.pos < this.ilen && this.current_is_space() {
+	for this.pos < this.ilen && this.current_is_space() && !this.current_is_new_line() {
 		w += this.current_str()
-		if this.current_is_new_line() {
-			this.line++
-			this.col = 1
-		} else {
-			this.col++
-		}
+		this.col++
 		this.next()
 	}
 
