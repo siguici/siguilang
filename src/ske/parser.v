@@ -41,6 +41,7 @@ pub fn (mut this Parser) parse_block(delimiters []TokenType) !&Block {
 }
 
 pub fn (mut this Parser) parse_stmt() !Stmt {
+	this.eat(.semicolon)
 	return if this.eat(.print) {
 		PrintStmt{this.parse_expr()!}
 	} else if this.eat(.if) {
@@ -166,12 +167,6 @@ pub fn (mut this Parser) parse_literal_expr() !Expr {
 	}
 
 	return error('Unexpected token ${t.val}${f} on line ${t.pos.line} at column ${t.pos.column}')
-}
-
-pub fn (mut this Parser) skip_whitespace() {
-	for this.current().is(.whitespace) {
-		this.advance()
-	}
 }
 
 pub fn (mut this Parser) eat(type TokenType) bool {
