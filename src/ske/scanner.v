@@ -438,7 +438,7 @@ pub fn (mut this Scanner) scan_string(delimiter int) string {
 					u8(delimiter).ascii_str()
 				}
 				else {
-					panic('Cannot escape ${this.peek_str()}')
+					panic('Cannot escape ${this.peek_u8().ascii_str()} in ${this.file} at ${this.line}:${this.col}')
 				}
 			}
 			this.col += 2
@@ -457,7 +457,7 @@ pub fn (mut this Scanner) scan_string(delimiter int) string {
 	}
 
 	if !end {
-		panic('End of string ${delimiter} expected')
+		panic('End of string ${u8(delimiter).ascii_str()} expected in ${this.file} at ${this.line}:${this.col}')
 	}
 
 	return v
