@@ -58,7 +58,7 @@ pub fn run_repl() bool {
 				line += 'print ${line}\n'
 			}
 			line_code += '\n${line}'
-			run('<? ${line_code} ?>')
+			run(line_code)
 			continue
 		}
 
