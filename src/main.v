@@ -6,7 +6,7 @@ import term
 
 pub fn main() {
 	mut app := cli.Command{
-		name:        'skelang'
+		name:        'ske'
 		description: 'Run a script or a code'
 		usage:       '[file_or_code]'
 		execute:     fn (cmd cli.Command) ! {
@@ -20,7 +20,6 @@ pub fn main() {
 			}
 
 			for arg in cmd.args {
-				println(term.ok_message('Running ${arg}...'))
 				run(arg)
 			}
 		}
