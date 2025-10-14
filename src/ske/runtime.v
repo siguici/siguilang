@@ -1,6 +1,7 @@
 module ske
 
 import os
+import sync
 
 @[params]
 pub struct RunParams {
@@ -40,4 +41,27 @@ pub fn run_file(file string, params RunParams) {
 pub fn run_code(code string, params RunParams) {
 	mut t := parse(lex(code: code, file: params.path, dir: params.root))
 	interpret(mut t)
+}
+
+pub fn run_many(inputs []string, params RunParams) {
+	for input in inputs {
+		run(input, params)
+	}
+}
+
+pub fn run_many_concurrently(inputs []string, params RunParams) {
+	mut wg := sync.new_waitgroup()
+	wg.add(inputs.len)
+	defer {
+		wg.done()
+	}
+	for input in inputs {
+		go fn (_input string, mut _wg sync.WaitGroup) {
+			defer {
+				_wg.done()
+			}
+			run(_input)
+		}(input, mut wg)
+	}
+	wg.wait()
 }

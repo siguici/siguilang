@@ -1,7 +1,6 @@
 module main
 
 import cli
-import term
 import os
 import v.vmod
 import ske
@@ -31,6 +30,12 @@ pub fn Program.new() &Program {
 				abbrev:      'r'
 				description: 'Start an interactive REPL session.'
 			},
+			cli.Flag{
+				flag:        .bool
+				name:        'conc'
+				abbrev:      'c'
+				description: 'Run multiple files concurrently.'
+			},
 		]
 		execute:     fn (cmd cli.Command) ! {
 			if code := cmd.flags.get_string('eval') {
@@ -45,12 +50,10 @@ pub fn Program.new() &Program {
 			}
 
 			if cmd.args.len > 0 {
-				for file_path in cmd.args {
-					if os.exists(file_path) {
-						ske.run_file(file_path, root: os.getwd())
-					} else {
-						eprintln(term.red('File ${file_path} not found'))
-					}
+				if cmd.flags.get_bool('conc') or { false } {
+					ske.run_many_concurrently(os.args)
+				} else {
+					ske.run_many(os.args)
 				}
 				return
 			}
