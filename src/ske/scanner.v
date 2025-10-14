@@ -470,7 +470,7 @@ pub fn (mut this Scanner) scan_string(delimiter int) string {
 		this.next()
 	}
 
-	if !end && this.peek() != -1 {
+	if !end && this.peek() != -1 && this.current() == delimiter {
 		panic('End of string ${u8(delimiter).ascii_str()} expected in ${this.file} at ${this.line}:${this.col}')
 	}
 
@@ -487,6 +487,12 @@ pub fn (mut this Scanner) scan_newline() string {
 		this.next()
 	}
 
+	if this.peek() == -1 && this.current_is_new_line() {
+		this.line++
+		this.col = 1
+		w += this.current_str()
+	}
+
 	return w
 }
 
@@ -497,6 +503,11 @@ pub fn (mut this Scanner) scan_whitespace() string {
 		w += this.current_str()
 		this.col++
 		this.next()
+	}
+
+	if this.peek() == -1 && this.current_is_space() && !this.current_is_new_line() {
+		w += this.current_str()
+		this.col++
 	}
 
 	return w
@@ -515,6 +526,11 @@ pub fn (mut this Scanner) scan_integer() string {
 		this.next()
 	}
 
+	if this.peek() == -1 && this.current_is_digit() {
+		i += this.current_str()
+		this.col++
+	}
+
 	return i
 }
 
@@ -528,6 +544,10 @@ pub fn (mut this Scanner) scan_decimal() string {
 			d += this.peek_str()
 			this.col++
 			this.next()
+		}
+
+		if this.peek() == -1 && this.current_is_digit() {
+			this.col++
 		}
 	}
 
@@ -551,6 +571,12 @@ pub fn (mut this Scanner) scan_identifier() string {
 			id += this.current_str()
 			this.next()
 		}
+	}
+
+	if this.peek() == -1 && (this.current_is_digit() || this.current_is_underscore()
+		|| this.current_is_letter()) {
+		id += this.current_str()
+		this.col++
 	}
 
 	return id
