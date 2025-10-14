@@ -19,15 +19,27 @@ pub fn new_eval() Eval {
 	return Eval.new()
 }
 
-pub fn eval(node Node) ! {
+pub fn eval(program Program) ! {
 	mut ev := new_eval()
-	ev.eval(node)!
+	ev.eval(program)!
 }
 
-pub fn (mut this Eval) eval(n Node) ! {
+pub fn (mut this Eval) eval(p Program) ! {
+	for node in p.nodes {
+		this.eval_node(node)!
+	}
+}
+
+pub fn (mut this Eval) eval_node(n Node) ! {
 	match n {
-		Script {
-			this.eval_script(n)!
+		Decl {
+			this.eval_decl(n)!
+		}
+		Block {
+			this.eval_block(n)!
+		}
+		Stmt {
+			this.eval_stmt(n)!
 		}
 		EmptyNode {
 			this.eval_empty(n)
@@ -35,8 +47,12 @@ pub fn (mut this Eval) eval(n Node) ! {
 	}
 }
 
-fn (mut this Eval) eval_script(s Script) ! {
-	for stmt in s.stmts {
+fn (mut this Eval) eval_decl(d Decl) ! {
+	return error('Not implemented')
+}
+
+pub fn (mut this Eval) eval_block(b Block) ! {
+	for stmt in b.stmts {
 		this.eval_stmt(stmt)!
 	}
 }
@@ -69,11 +85,11 @@ fn (mut this Eval) eval_if(s IfStmt) ! {
 	c := this.eval_cond(s.cond)!
 
 	if c {
-		this.eval_script(s.left)!
+		this.eval_block(s.left)!
 	}
 
 	if !c && s.right != unsafe { nil } {
-		this.eval_script(s.right)!
+		this.eval_block(s.right)!
 	}
 }
 

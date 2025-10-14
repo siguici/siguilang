@@ -1,15 +1,17 @@
 module main
 
-pub fn interpret(ast []Node) {
+pub fn interpret(mut program Program) {
 	mut e := new_eval()
 
-	for i := 0; i < ast.len; i++ {
-		mut n := ast[i]
+	for i := 0; i < program.nodes.len; i++ {
+		mut node := program.nodes[i]
 
-		if check(n) {
-			n = optimize(n)
+		if check(node) {
+			node = optimize(node)
 		}
 
-		e.eval(n) or { panic(err) }
+		program.nodes[i] = node
 	}
+
+	e.eval(program) or { panic('Failed to interpret program: ${err.msg()}') }
 }

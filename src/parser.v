@@ -1,15 +1,8 @@
 module main
 
-pub fn parse(tokens []Token) []Node {
-	mut ast := []Node{}
+pub fn parse(tokens []Token) Program {
 	mut p := new_parser(tokens)
-
-	for !p.is_eof() {
-		ast << p.parse() or { panic(err) }
-		p.next()
-	}
-
-	return ast
+	return p.parse()
 }
 
 pub struct Parser {
@@ -27,31 +20,16 @@ pub fn new_parser(tokens []Token) Parser {
 	return Parser.new(tokens)
 }
 
-pub fn (mut this Parser) parse() !Node {
-	t := this.current()
-
-	return if t.is(.ltag) {
+pub fn (mut this Parser) parse() Program {
+	mut nodes := []Node{}
+	for !this.is_eof() {
+		nodes << this.parse_block([TokenType.eof]) or { panic(err) }
 		this.next()
-		this.parse_script()!
-	} else {
-		empty_node
 	}
+	return Program{nodes}
 }
 
-pub fn (mut this Parser) parse_script() !&Script {
-	mut t := []Token{}
-	for tt := this.current(); !tt.is(.rtag) && !this.is_eof(); this.advance() {
-		if this.eat(.whitespace) && this.eat(.rtag) {
-			break
-		}
-		t << this.current()
-	}
-
-	mut p := new_parser(t)
-	return p.parse_block([TokenType.eof])
-}
-
-pub fn (mut this Parser) parse_block(delimiters []TokenType) !&Script {
+pub fn (mut this Parser) parse_block(delimiters []TokenType) !&Block {
 	mut s := []Stmt{}
 	for (this.remaining() > 0 && !this.current().in(delimiters)) {
 		s << this.parse_stmt()!
@@ -59,7 +37,7 @@ pub fn (mut this Parser) parse_block(delimiters []TokenType) !&Script {
 	if !(delimiters.len == 1 && TokenType.eof in delimiters) {
 		this.eat_any_or_fail(delimiters, '${tokens_to_str(delimiters)} expected at the end of block')!
 	}
-	return &Script{s}
+	return &Block{s}
 }
 
 pub fn (mut this Parser) parse_stmt() !Stmt {

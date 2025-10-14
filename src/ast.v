@@ -2,13 +2,38 @@ module main
 
 pub const empty_node = Node(EmptyNode(0))
 
-pub type Node = Script | EmptyNode
+pub type Node = Decl | Stmt | Block | EmptyNode
 pub type EmptyNode = u8
+pub type Decl = TypeDecl | VarDecl | ConstDecl | EnumDecl | FuncDecl | StructDecl
 pub type Stmt = PrintStmt | IfStmt | Expr
 pub type Expr = AssignExpr | BinaryExpr | UnaryExpr | LiteralExpr | ScanExpr
 
-pub struct Script {
+pub struct Program {
+mut:
+	nodes []Node
+}
+
+pub struct Block {
+mut:
 	stmts []Stmt
+}
+
+pub struct TypeDecl {
+}
+
+pub struct VarDecl {
+}
+
+pub struct ConstDecl {
+}
+
+pub struct EnumDecl {
+}
+
+pub struct FuncDecl {
+}
+
+pub struct StructDecl {
 }
 
 pub struct PrintStmt {
@@ -17,8 +42,8 @@ pub struct PrintStmt {
 
 pub struct IfStmt {
 	cond  Expr
-	left  Script
-	right &Script = unsafe { nil }
+	left  Block
+	right &Block = unsafe { nil }
 }
 
 pub struct ScanExpr {

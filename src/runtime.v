@@ -21,5 +21,6 @@ pub fn run_file(file string) {
 }
 
 pub fn run_code(opts LexOptions) {
-	interpret(parse(lex(opts)))
+	mut t := parse(lex(opts))
+	interpret(mut t)
 }
