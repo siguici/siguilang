@@ -456,7 +456,7 @@ pub fn (mut this Scanner) scan_string(delimiter int) string {
 		this.next()
 	}
 
-	if !end {
+	if !end && this.next() != -1 {
 		panic('End of string ${u8(delimiter).ascii_str()} expected in ${this.file} at ${this.line}:${this.col}')
 	}
 
