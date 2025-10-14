@@ -51,9 +51,9 @@ pub fn Program.new() &Program {
 
 			if cmd.args.len > 0 {
 				if cmd.flags.get_bool('conc') or { false } {
-					ske.run_many_concurrently(os.args)
+					ske.run_many_concurrently(cmd.args)
 				} else {
-					ske.run_many(os.args)
+					ske.run_many(cmd.args)
 				}
 				return
 			}
