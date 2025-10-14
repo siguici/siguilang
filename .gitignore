@@ -1,6 +1,6 @@
 # Binaries for programs and plugins
-ske
-main
+/ske
+/main
 *.zip
 *.zip.sha256
 *.exe

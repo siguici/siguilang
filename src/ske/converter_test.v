@@ -1,4 +1,4 @@
-module main
+module ske
 
 fn test_bool_conversion() {
 	assert to_bool('') == false

@@ -1,4 +1,4 @@
-module main
+module ske
 
 fn to_int(v Value) int {
 	return match v {

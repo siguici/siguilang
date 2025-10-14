@@ -1,4 +1,4 @@
-module main
+module ske
 
 struct Expectation[T] {
 	val T

@@ -1,4 +1,4 @@
-module main
+module ske
 
 pub interface SanitizerContract[T] {
 	reason string

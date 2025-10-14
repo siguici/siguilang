@@ -1,3 +1,5 @@
+module ske
+
 pub struct SkeError {
 	Error
 	file   string

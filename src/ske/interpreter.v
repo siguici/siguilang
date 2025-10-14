@@ -1,4 +1,4 @@
-module main
+module ske
 
 pub fn interpret(mut program Program) {
 	mut e := new_eval()

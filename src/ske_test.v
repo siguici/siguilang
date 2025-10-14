@@ -1,5 +1,7 @@
 module main
 
+import ske { ensure, expect }
+
 fn test_nil_unit() {
 	ensure(unsafe { nil }).is_nil()
 	expect(unsafe { nil }).to_be_nil()

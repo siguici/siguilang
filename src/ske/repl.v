@@ -1,4 +1,4 @@
-module main
+module ske
 
 import term
 import v.vmod

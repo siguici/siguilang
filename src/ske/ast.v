@@ -1,4 +1,4 @@
-module main
+module ske
 
 pub const empty_node = Node(EmptyNode(0))
 

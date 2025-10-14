@@ -1,4 +1,4 @@
-module main
+module ske
 
 pub fn parse(tokens []Token) Program {
 	mut p := new_parser(tokens)

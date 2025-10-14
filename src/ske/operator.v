@@ -1,3 +1,5 @@
+module ske
+
 struct OperatorInfo {
 	prec  int    = -1     // precedence
 	assoc string = 'left' // associativity 'left' or 'right'

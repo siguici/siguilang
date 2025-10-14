@@ -1,3 +1,5 @@
+module ske
+
 import strings.textscanner
 
 @[noinit]

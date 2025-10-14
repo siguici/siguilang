@@ -1,4 +1,4 @@
-module main
+module ske
 
 const primitive_types = ['bool', 'string', 'rune', 'i8', 'u8', 'i16', 'u16', 'int', 'u32', 'i64',
 	'u64', 'isize', 'usize', 'f32', 'f64', 'voidptr']

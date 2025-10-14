@@ -1,4 +1,4 @@
-module main
+module ske
 
 pub fn check(node Node) bool {
 	return true

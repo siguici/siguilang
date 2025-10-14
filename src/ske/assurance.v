@@ -1,4 +1,4 @@
-module main
+module ske
 
 struct Assurance[T] {
 	val T

@@ -1,3 +1,5 @@
+module ske
+
 struct Scope {
 	parent &Scope = unsafe { nil }
 mut:

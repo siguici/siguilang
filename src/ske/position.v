@@ -1,3 +1,5 @@
+module ske
+
 pub struct Position {
 	file   string
 	offset int

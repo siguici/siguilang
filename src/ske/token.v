@@ -1,4 +1,4 @@
-module main
+module ske
 
 pub enum TokenType {
 	amp        // &

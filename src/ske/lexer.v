@@ -1,3 +1,5 @@
+module ske
+
 @[params]
 struct LexOptions {
 	code string
