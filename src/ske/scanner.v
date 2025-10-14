@@ -167,7 +167,15 @@ pub fn (mut this Scanner) scan() Token {
 					this.tokenize_comma()
 				}
 				`$` {
-					this.tokenize_dollar()
+					mut t := this.tokenize_dollar()
+					if this.peek_is_letter() {
+						id := this.scan_identifier()
+						if id.len >= 1 {
+							this.pos--
+							t = this.tokenize_name(id)
+						}
+					}
+					return t
 				}
 				`#` {
 					this.tokenize_hash()
@@ -462,7 +470,7 @@ pub fn (mut this Scanner) scan_string(delimiter int) string {
 		this.next()
 	}
 
-	if !end && this.next() != -1 {
+	if !end && this.peek() != -1 {
 		panic('End of string ${u8(delimiter).ascii_str()} expected in ${this.file} at ${this.line}:${this.col}')
 	}
 
@@ -529,7 +537,8 @@ pub fn (mut this Scanner) scan_decimal() string {
 pub fn (mut this Scanner) scan_identifier() string {
 	mut id := ''
 
-	for this.pos < this.ilen && (this.current_is_underscore() || this.current_is_letter()) {
+	for this.pos < this.ilen && (this.current_is_underscore() || this.current_is_dollar()
+		|| this.current_is_letter()) {
 		id += this.current_str()
 		this.col++
 		this.next()
@@ -567,6 +576,10 @@ pub fn (mut this Scanner) current_is_letter() bool {
 	return this.current_u8().is_letter()
 }
 
+pub fn (mut this Scanner) current_is_dollar() bool {
+	return this.current_u8() == `$`
+}
+
 pub fn (mut this Scanner) current_is_new_line() bool {
 	return this.current_u8() == `\n`
 }
@@ -593,6 +606,10 @@ pub fn (mut this Scanner) peek_is_digit() bool {
 
 pub fn (mut this Scanner) peek_is_letter() bool {
 	return this.peek_u8().is_letter()
+}
+
+pub fn (mut this Scanner) peek_is_dollar() bool {
+	return this.peek_u8() == `$`
 }
 
 pub fn (mut this Scanner) peek_is_new_line() bool {
