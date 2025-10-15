@@ -37,6 +37,48 @@ pub fn Program.new() &Program {
 				description: 'Run multiple files concurrently.'
 			},
 		]
+		commands:    [
+			cli.Command{
+				name:        'release'
+				description: 'Re-build Ske'
+				usage:       'ske release'
+				execute:     fn (cmd cli.Command) ! {
+					args := cmd.args
+					if args.len >= 1 {
+						eprintln('❌ Unknown command : ${args[0]}')
+						exit(1)
+					}
+					ske.do_release()
+				}
+			},
+			cli.Command{
+				name:        'up'
+				description: 'Upgrade the Ske CLI'
+				usage:       'ske up [-version]'
+				flags:       [
+					cli.Flag{
+						flag:        .string
+						name:        'version'
+						abbrev:      'v'
+						description: 'The version to upgrade to'
+					},
+				]
+				execute:     fn (cmd cli.Command) ! {
+					args := cmd.args
+					if args.len >= 1 {
+						eprintln('❌ Unknown command : ${args[0]}')
+						exit(1)
+					}
+					if version := cmd.flags.get_string('version') {
+						if version != '' {
+							ske.self_upgrade_to(version)
+							return
+						}
+					}
+					ske.self_upgrade()
+				}
+			},
+		]
 		execute:     fn (cmd cli.Command) ! {
 			if code := cmd.flags.get_string('eval') {
 				if code != '' {
