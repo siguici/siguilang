@@ -36,8 +36,12 @@ pub fn (mut this Eval) init_var(type string, name string, value Value) {
 	}
 }
 
-pub fn (mut this Eval) set_var(name string, value Value) {
-	this.vars[name].value = value
+pub fn (mut this Eval) set_var(name string, value Value) ! {
+	if _ := this.vars[name] {
+		this.vars[name].value = value
+	} else {
+		return error('Undefined variable ${name}')
+	}
 }
 
 pub fn (this Eval) get_var(name string) Value {

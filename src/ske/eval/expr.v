@@ -37,7 +37,7 @@ fn (mut this Eval) eval_assign(a ast.AssignExpr) !Value {
 	var_value := this.eval_expr(a.right)!
 	var_name := this.eval_name(a.left) or { panic('Cannot assign ${var_value}: ${err}') }
 
-	this.set_var(var_name, var_value)
+	this.set_var(var_name, var_value)!
 
 	return var_value
 }

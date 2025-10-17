@@ -1,4 +1,9 @@
 int a
+int b
+float p
+string c
+string r
+string ls
 
 a = 20 + -2 * (8 - 4) * 2
 b = 5 + 9 / 3
