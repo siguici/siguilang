@@ -6,6 +6,7 @@ pub struct Var {
 pub mut:
 	type  Type
 	value Value
+	mutable bool
 }
 
 pub struct Eval {
@@ -33,11 +34,15 @@ pub fn (mut this Eval) init_var(type string, name string, value Value) {
 			name: type
 		}
 		value: value
+		mutable: name.starts_with('\$')
 	}
 }
 
 pub fn (mut this Eval) set_var(name string, value Value) ! {
-	if _ := this.vars[name] {
+	if var_def := this.vars[name] {
+		if !var_def.mutable {
+			return error('Cannot modify read-only variable ${name}')
+		}
 		this.vars[name].value = value
 	} else {
 		return error('Undefined variable ${name}')

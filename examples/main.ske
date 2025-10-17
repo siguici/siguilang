@@ -1,27 +1,26 @@
-int a
-int b
-float p
-string c
-string r
-string ls
+int $a
+int $b
+string $c
+string $r
+string $ls
 
-a = 20 + -2 * (8 - 4) * 2
-b = 5 + 9 / 3
+$a = 20 + -2 * (8 - 4) * 2
+$b = 5 + 9 / 3
 
-print b / -a * 3
+print $b / -$a * 3
 
-p = 5**2**2
+float p = 5**2**2
 print p
 
-c = scan 'How old are you?', '\n> '
+$c = scan 'How old are you?', '\n> '
 
-if c {
-  r = 'Your are major'
+if $c {
+  $r = 'Your are major'
 } else {
-  r = 'Your are minor'
+  $r = 'Your are minor'
 }
 
-print 'You are ', c, ' year old and ', r
+print 'You are ', $c, ' year old and ', $r
 
-ls = `ls -la`
-print ls
+$ls = `ls -la`
+print $ls
