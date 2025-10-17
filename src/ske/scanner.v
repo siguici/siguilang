@@ -455,7 +455,7 @@ pub fn (mut this Scanner) scan_string(delimiter int) !string {
 	mut v := ''
 	mut end := false
 
-	for this.pos < this.ilen {
+	for (this.pos < this.ilen) {
 		if this.current() == delimiter && this.peek_back() != `\\` {
 			end = true
 			break
@@ -496,7 +496,12 @@ pub fn (mut this Scanner) scan_string(delimiter int) !string {
 		this.next()
 	}
 
-	if !end && this.peek() == -1 && this.current() != delimiter {
+	if this.peek() == -1 && this.current() == delimiter {
+		end = true
+		this.next()
+	}
+
+	if !end {
 		return scanner_error('End of string ${u8(delimiter).ascii_str()} expected', this.position())
 	}
 
@@ -506,17 +511,11 @@ pub fn (mut this Scanner) scan_string(delimiter int) !string {
 pub fn (mut this Scanner) scan_newline() string {
 	mut w := ''
 
-	for this.pos < this.ilen && this.current_is_new_line() {
+	for (this.pos < this.ilen || this.peek() != -1) && this.current_is_new_line() {
 		this.line++
 		this.col = 1
 		w += this.current_str()
 		this.next()
-	}
-
-	if this.peek() == -1 && this.current_is_new_line() {
-		this.line++
-		this.col = 1
-		w += this.current_str()
 	}
 
 	return w
@@ -525,15 +524,11 @@ pub fn (mut this Scanner) scan_newline() string {
 pub fn (mut this Scanner) scan_whitespace() string {
 	mut w := ''
 
-	for this.pos < this.ilen && this.current_is_space() && !this.current_is_new_line() {
+	for (this.pos < this.ilen || this.peek() != -1) && this.current_is_space()
+		&& !this.current_is_new_line() {
 		w += this.current_str()
 		this.col++
 		this.next()
-	}
-
-	if this.peek() == -1 && this.current_is_space() && !this.current_is_new_line() {
-		w += this.current_str()
-		this.col++
 	}
 
 	return w
@@ -547,7 +542,7 @@ pub fn (mut this Scanner) scan_number() string {
 		this.col++
 		this.next()
 
-		for this.pos < this.ilen && this.current_is_digit() {
+		for (this.pos < this.ilen || this.peek() != -1) && this.current_is_digit() {
 			nb += this.current_str()
 			this.col++
 			this.next()
@@ -559,16 +554,11 @@ pub fn (mut this Scanner) scan_number() string {
 		this.col++
 		this.next()
 
-		for this.pos < this.ilen && this.current_is_digit() {
+		for (this.pos < this.ilen || this.peek() != -1) && this.current_is_digit() {
 			nb += this.current_str()
 			this.col++
 			this.next()
 		}
-	}
-
-	if this.peek() == -1 && this.current_is_digit() {
-		nb += this.current_str()
-		this.col++
 	}
 
 	return nb
@@ -583,18 +573,13 @@ pub fn (mut this Scanner) scan_identifier() string {
 		this.col++
 		this.next()
 
-		for this.pos < this.ilen && (this.current_is_digit() || this.current_is_underscore()
+		for (this.pos < this.ilen || this.peek() != -1)
+			&& (this.current_is_digit() || this.current_is_underscore()
 			|| this.current_is_letter()) {
 			id += this.current_str()
 			this.col++
 			this.next()
 		}
-	}
-
-	if this.peek() == -1 && (this.current_is_digit() || this.current_is_underscore()
-		|| this.current_is_letter()) {
-		id += this.current_str()
-		this.col++
 	}
 
 	return id
