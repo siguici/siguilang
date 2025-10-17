@@ -52,15 +52,10 @@ pub fn run_repl() bool {
 
 		if line !in ['\\q', 'exit()'] {
 			ran = true
-			mut line_code := code
-			code += '\n${line}'
-			if !line.starts_with('print ') {
-				line += 'print ${line}\n'
-			}
-			line_code += '\n${line}'
-			run(line_code) or {
+			code += if code == '' { line } else { ';${line}' }
+			run(code) or {
+				code = ''
 				eprintln(err)
-				break
 			}
 			continue
 		}
