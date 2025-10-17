@@ -498,7 +498,7 @@ pub fn (mut this Scanner) scan_string(delimiter int) !string {
 		this.next()
 	}
 
-	if !end && this.peek() != -1 && this.current() == delimiter {
+	if !end && this.peek() == -1 && this.current() != delimiter {
 		return scanner_error('End of string ${u8(delimiter).ascii_str()} expected', this.position())
 	}
 
