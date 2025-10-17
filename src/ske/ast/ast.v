@@ -8,11 +8,6 @@ pub type Stmt = Decl | PrintStmt | IfStmt | Expr
 pub type Decl = TypeDecl | VarDecl | ConstDecl | EnumDecl | FuncDecl | StructDecl
 pub type Expr = AssignExpr | BinaryExpr | UnaryExpr | LiteralExpr | ScanExpr
 
-pub struct Program {
-pub:
-	nodes []Node
-}
-
 pub struct Block {
 pub:
 	stmts []Stmt

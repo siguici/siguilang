@@ -24,9 +24,9 @@ pub fn new_eval() Eval {
 	return Eval.new()
 }
 
-pub fn eval(program ast.Program) ! {
+pub fn eval(nodes []ast.Node) ! {
 	mut ev := new_eval()
-	ev.eval(program)!
+	ev.eval(nodes)!
 }
 
 pub fn (mut this Eval) init_var(type string, name string, value Value) ! {
@@ -69,8 +69,8 @@ pub fn (this Eval) get_var(name string) !Value {
 	}
 }
 
-pub fn (mut this Eval) eval(p ast.Program) ! {
-	for node in p.nodes {
+pub fn (mut this Eval) eval(nodes []ast.Node) ! {
+	for node in nodes {
 		this.eval_node(node)!
 	}
 }

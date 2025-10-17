@@ -1,10 +1,10 @@
 module ske
 
-import ske.ast { AssignExpr, BinaryExpr, Block, Decl, Expr, IfStmt, LiteralExpr, Node, PrintStmt, Program, ScanExpr, Stmt, UnaryExpr, VarDecl }
+import ske.ast { AssignExpr, BinaryExpr, Block, Decl, Expr, IfStmt, LiteralExpr, Node, PrintStmt, ScanExpr, Stmt, UnaryExpr, VarDecl }
 
-pub fn parse(tokens []Token) Program {
+pub fn parse(tokens []Token) ![]Node {
 	mut p := new_parser(tokens)
-	return p.parse()
+	return p.parse()!
 }
 
 pub struct Parser {
@@ -22,13 +22,13 @@ pub fn new_parser(tokens []Token) Parser {
 	return Parser.new(tokens)
 }
 
-pub fn (mut this Parser) parse() Program {
+pub fn (mut this Parser) parse() ![]Node {
 	mut nodes := []Node{}
 	for !this.is_eof() {
-		nodes << this.parse_block([TokenType.eof]) or { panic(err) }
+		nodes << this.parse_block([TokenType.eof])!
 		this.next()
 	}
-	return Program{nodes}
+	return nodes
 }
 
 pub fn (mut this Parser) parse_block(delimiters []TokenType) !&Block {
