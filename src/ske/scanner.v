@@ -478,7 +478,7 @@ pub fn (mut this Scanner) scan_string(delimiter int) !string {
 					u8(delimiter).ascii_str()
 				}
 				else {
-					panic('Cannot escape ${this.peek_u8().ascii_str()} in ${this.file} at ${this.line}:${this.col}')
+					return scanner_error('Cannot escape ${this.peek_u8().ascii_str()}', this.position())
 				}
 			}
 			this.col += 2
