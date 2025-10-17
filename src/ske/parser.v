@@ -222,7 +222,7 @@ pub fn (mut this Parser) next() Token {
 	if o < this.limit {
 		return this.tokens[o]
 	}
-	return Token.eof()
+	return Token.eof(this.current().pos)
 }
 
 @[inline]
@@ -251,7 +251,7 @@ pub fn (this &Parser) peek_n(n int) Token {
 	if o < this.limit {
 		return this.tokens[o]
 	}
-	return Token.eof()
+	return Token.eof(this.current().pos)
 }
 
 @[inline]
@@ -292,15 +292,16 @@ pub fn (this &Parser) peek_back_n(n int) Token {
 	if this.offset >= n {
 		return this.tokens[this.offset - n]
 	}
-	return Token.eof()
+	return Token.eof(this.current().pos)
 }
 
 @[direct_array_access; inline]
-pub fn (mut this Parser) current() Token {
+pub fn (this Parser) current() Token {
 	if this.offset <= this.limit {
 		return this.tokens[this.offset]
 	}
-	return Token.eof()
+	mut pos := this.peek_back().pos
+	return Token.eof(pos.next_column())
 }
 
 pub fn (mut this Parser) reset() {
