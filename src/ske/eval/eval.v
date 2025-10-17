@@ -4,8 +4,8 @@ import ske.ast
 
 pub struct Var {
 pub mut:
-	type  Type
-	value Value
+	type    Type
+	value   Value
 	mutable bool
 }
 
@@ -30,10 +30,10 @@ pub fn eval(program ast.Program) ! {
 
 pub fn (mut this Eval) init_var(type string, name string, value Value) {
 	this.vars[name] = Var{
-		type:  NamedType{
+		type:    NamedType{
 			name: type
 		}
-		value: value
+		value:   value
 		mutable: name.starts_with('\$')
 	}
 }
@@ -49,8 +49,12 @@ pub fn (mut this Eval) set_var(name string, value Value) ! {
 	}
 }
 
-pub fn (this Eval) get_var(name string) Value {
-	return this.vars[name].value
+pub fn (this Eval) get_var(name string) !Value {
+	return if var_def := this.vars[name] {
+		var_def.value
+	} else {
+		error('Undefined variable ${name}')
+	}
 }
 
 pub fn (mut this Eval) eval(p ast.Program) ! {

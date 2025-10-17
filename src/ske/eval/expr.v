@@ -136,7 +136,7 @@ fn (this Eval) eval_literal(l ast.LiteralExpr) !Value {
 			v.int()
 		}
 		'name' {
-			this.get_var(v)
+			this.get_var(v)!
 		}
 		'char' {
 			v
