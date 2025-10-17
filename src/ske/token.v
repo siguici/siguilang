@@ -12,7 +12,6 @@ pub enum TokenType {
 	bit_not            // ~
 	boolean_and_assign // &&=
 	boolean_or_assign  // ||=
-	char               // 'A' - byte
 	colon              // :
 	comma              // ,
 	comment
@@ -574,10 +573,6 @@ pub fn Token.boolean_and_assign(pos Position) Token {
 
 pub fn Token.boolean_or_assign(pos Position) Token {
 	return new_token(.boolean_or_assign, '||=', pos)
-}
-
-pub fn Token.char(val string, pos Position) Token {
-	return new_token(.char, val, pos)
 }
 
 pub fn Token.colon(pos Position) Token {

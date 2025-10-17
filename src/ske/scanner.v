@@ -853,10 +853,6 @@ pub fn (mut this Scanner) token_boolean_or_assign() Token {
 	return this.token(.boolean_or_assign, '||=')
 }
 
-pub fn (mut this Scanner) token_char(val string) Token {
-	return this.token(.char, val)
-}
-
 pub fn (mut this Scanner) token_colon() Token {
 	return this.token(.colon, ':')
 }
