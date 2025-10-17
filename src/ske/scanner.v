@@ -540,55 +540,53 @@ pub fn (mut this Scanner) scan_whitespace() string {
 }
 
 pub fn (mut this Scanner) scan_number() string {
-	mut n := ''
+	mut nb := ''
 
 	if this.current_is_digit() || (this.current_is_dot() && this.peek_is_digit()) {
-		n += this.current_str()
-		this.col++
-		this.next()
-	}
-
-	for this.pos < this.ilen && this.current_is_digit() {
-		n += this.current_str()
-		this.col++
-		this.next()
-	}
-
-	if !n.contains('.') && this.current_is_dot() && this.peek_is_digit() {
-		n += this.current_str()
+		nb += this.current_str()
 		this.col++
 		this.next()
 
 		for this.pos < this.ilen && this.current_is_digit() {
-			n += this.current_str()
+			nb += this.current_str()
+			this.col++
+			this.next()
+		}
+	}
+
+	if !nb.contains('.') && this.current_is_dot() && this.peek_is_digit() {
+		nb += this.current_str()
+		this.col++
+		this.next()
+
+		for this.pos < this.ilen && this.current_is_digit() {
+			nb += this.current_str()
 			this.col++
 			this.next()
 		}
 	}
 
 	if this.peek() == -1 && this.current_is_digit() {
-		n += this.current_str()
+		nb += this.current_str()
 		this.col++
 	}
 
-	return n
+	return nb
 }
 
 pub fn (mut this Scanner) scan_identifier() string {
 	mut id := ''
 
-	for this.pos < this.ilen && (this.current_is_underscore() || this.current_is_dollar()
-		|| this.current_is_letter()) {
+	if this.current_is_underscore() || this.current_is_letter()
+		|| (this.current_is_dollar() && this.peek_is_letter()) {
 		id += this.current_str()
 		this.col++
 		this.next()
-	}
 
-	if this.current_is_digit() {
 		for this.pos < this.ilen && (this.current_is_digit() || this.current_is_underscore()
 			|| this.current_is_letter()) {
-			this.col++
 			id += this.current_str()
+			this.col++
 			this.next()
 		}
 	}
