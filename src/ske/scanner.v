@@ -540,44 +540,38 @@ pub fn (mut this Scanner) scan_whitespace() string {
 }
 
 pub fn (mut this Scanner) scan_number() string {
-	return this.scan_integer() + this.scan_decimal()
-}
+	mut n := ''
 
-pub fn (mut this Scanner) scan_integer() string {
-	mut i := ''
-
-	for this.pos < this.ilen && this.current_is_digit() {
-		i += this.current_str()
+	if this.current_is_digit() || (this.current_is_dot() && this.peek_is_digit()) {
+		n += this.current_str()
 		this.col++
 		this.next()
 	}
 
-	if this.peek() == -1 && this.current_is_digit() {
-		i += this.current_str()
+	for this.pos < this.ilen && this.current_is_digit() {
+		n += this.current_str()
 		this.col++
+		this.next()
 	}
 
-	return i
-}
-
-pub fn (mut this Scanner) scan_decimal() string {
-	mut d := ''
-
-	if this.current_is_dot() && this.peek_is_digit() {
-		d += this.current_str()
+	if !n.contains('.') && this.current_is_dot() && this.peek_is_digit() {
+		n += this.current_str()
 		this.col++
-		for this.pos < this.ilen && this.peek_is_digit() {
-			d += this.peek_str()
+		this.next()
+
+		for this.pos < this.ilen && this.current_is_digit() {
+			n += this.current_str()
 			this.col++
 			this.next()
 		}
-
-		if this.peek() == -1 && this.current_is_digit() {
-			this.col++
-		}
 	}
 
-	return d
+	if this.peek() == -1 && this.current_is_digit() {
+		n += this.current_str()
+		this.col++
+	}
+
+	return n
 }
 
 pub fn (mut this Scanner) scan_identifier() string {
