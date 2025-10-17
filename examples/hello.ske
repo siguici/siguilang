@@ -1,0 +1,4 @@
+print 'Hello world'
+
+string name = scan 'Your name: '
+print 'Hello ', name
