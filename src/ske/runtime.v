@@ -26,7 +26,7 @@ pub fn run(code string, params RunParams) {
 pub fn run_path(path string, params RunParams) {
 	if os.is_dir(path) {
 		for file in os.ls(path) or { []string{} } {
-			run_path(file, params)
+			run_path('${path}/${file}', params)
 		}
 	} else {
 		run_file(path, params)
