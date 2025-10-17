@@ -133,7 +133,11 @@ fn (this Eval) eval_literal(l ast.LiteralExpr) !Value {
 
 	return match n {
 		'number' {
-			v.int()
+			if v.contains('.') {
+				v.f64()
+			} else {
+				v.int()
+			}
 		}
 		'name' {
 			this.get_var(v)!
