@@ -1,4 +1,4 @@
-module ske
+module checker
 
 fn test_nil() {
 	assert is_nil(unsafe { nil }) == true

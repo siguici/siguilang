@@ -1,5 +1,7 @@
 module ske
 
+import ske.ast { AssignExpr, BinaryExpr, Block, Decl, Expr, IfStmt, LiteralExpr, Node, PrintStmt, Program, ScanExpr, Stmt, UnaryExpr, VarDecl }
+
 pub fn parse(tokens []Token) Program {
 	mut p := new_parser(tokens)
 	return p.parse()
@@ -57,8 +59,23 @@ pub fn (mut this Parser) parse_stmt() !Stmt {
 		} else {
 			IfStmt{c, b, unsafe { nil }}
 		}
+	} else if this.current().is(.name) {
+		this.parse_decl()!
 	} else {
 		Stmt(this.parse_expr()!)
+	}
+}
+
+pub fn (mut this Parser) parse_decl() !Stmt {
+	return if this.current().is(.name) && this.peek().is(.name) {
+		decl_type := this.current().val
+		this.advance()
+		Decl(VarDecl{
+			type: decl_type
+			expr: this.parse_expr()!
+		})
+	} else {
+		this.parse_expr()!
 	}
 }
 

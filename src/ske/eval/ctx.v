@@ -1,4 +1,4 @@
-module ske
+module eval
 
 struct Scope {
 	parent &Scope = unsafe { nil }

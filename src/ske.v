@@ -82,7 +82,7 @@ pub fn Program.new() &Program {
 		execute:     fn (cmd cli.Command) ! {
 			if code := cmd.flags.get_string('eval') {
 				if code != '' {
-					ske.run_code(code, path: os.getwd())
+					ske.run_code(code, path: os.getwd()) or { panic(err) }
 					return
 				}
 			}
@@ -93,9 +93,9 @@ pub fn Program.new() &Program {
 
 			if cmd.args.len > 0 {
 				if cmd.flags.get_bool('conc') or { false } {
-					ske.run_many_concurrently(cmd.args)
+					ske.run_many_concurrently(cmd.args) or { panic(err) }
 				} else {
-					ske.run_many(cmd.args)
+					ske.run_many(cmd.args) or { panic(err) }
 				}
 				return
 			}

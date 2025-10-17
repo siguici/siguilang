@@ -1,6 +1,8 @@
-module ske
+module checker
 
-pub fn check(node Node) bool {
+import ske.ast
+
+pub fn check(node ast.Node) bool {
 	return true
 }
 

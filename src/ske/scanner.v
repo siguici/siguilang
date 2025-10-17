@@ -400,6 +400,9 @@ pub fn (mut this Scanner) scan() Token {
 			if id.len >= 1 {
 				this.pos--
 				return match id {
+					'true', 'false' {
+						this.tokenize_bool(id)
+					}
 					'print' {
 						this.tokenize_print()
 					}
@@ -813,6 +816,10 @@ pub fn (mut this Scanner) tokenize_at() Token {
 
 pub fn (mut this Scanner) tokenize_bit_not() Token {
 	return this.tokenize(.bit_not, '~')
+}
+
+pub fn (mut this Scanner) tokenize_bool(val string) Token {
+	return this.tokenize(.bool, val)
 }
 
 pub fn (mut this Scanner) tokenize_boolean_and_assign() Token {

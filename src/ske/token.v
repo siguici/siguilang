@@ -82,6 +82,7 @@ pub enum TokenType {
 	// Keywords
 	as
 	assert
+	bool
 	break
 	case
 	continue
@@ -417,6 +418,10 @@ pub fn Token.assert(pos Position) Token {
 
 pub fn Token.await(pos Position) Token {
 	return new_keyword(.await, pos)
+}
+
+pub fn Token.bool(pos Position) Token {
+	return new_keyword(.bool, pos)
 }
 
 pub fn Token.break(pos Position) Token {

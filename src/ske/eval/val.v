@@ -1,6 +1,12 @@
-module ske
+module eval
 
-fn to_int(v Value) int {
+type Value = int | f64 | string | bool | Nil
+type BinaryValue = int | string
+
+struct Nil {}
+
+@[inline]
+fn (v Value) to_int() int {
 	return match v {
 		string {
 			v.int()
@@ -18,10 +24,14 @@ fn to_int(v Value) int {
 				0
 			}
 		}
+		Nil {
+			return 0
+		}
 	}
 }
 
-fn to_float(v Value) f64 {
+@[inline]
+fn (v Value) to_float() f64 {
 	return match v {
 		string {
 			v.f64()
@@ -39,10 +49,14 @@ fn to_float(v Value) f64 {
 				0.0
 			}
 		}
+		Nil {
+			return 0.0
+		}
 	}
 }
 
-fn to_str(v Value) string {
+@[inline]
+fn (v Value) to_str() string {
 	return match v {
 		string {
 			v
@@ -50,11 +64,14 @@ fn to_str(v Value) string {
 		f64, int, bool {
 			v.str()
 		}
+		Nil {
+			''
+		}
 	}
 }
 
 @[inline]
-fn to_bool(v Value) bool {
+fn (v Value) to_bool() bool {
 	return match v {
 		string {
 			v != '0' && v.len > 0
@@ -67,6 +84,9 @@ fn to_bool(v Value) bool {
 		}
 		bool {
 			v
+		}
+		Nil {
+			false
 		}
 	}
 }
