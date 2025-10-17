@@ -44,10 +44,14 @@ pub fn (mut this Scanner) tokenize() ![]Token {
 	mut t := []Token{}
 
 	for this.next() != -1 && this.pos != this.ilen {
-		i := this.scan()!
-		if !i.is(.whitespace) {
-			t << i
+		c := this.scan()!
+		if !c.is(.whitespace) {
+			t << c
 		}
+	}
+
+	if !this.current_is_space() {
+		t << this.scan()!
 	}
 
 	return t
@@ -478,7 +482,8 @@ pub fn (mut this Scanner) scan_string(delimiter int) !string {
 					u8(delimiter).ascii_str()
 				}
 				else {
-					return scanner_error('Cannot escape ${this.peek_u8().ascii_str()}', this.position())
+					return scanner_error('Cannot escape ${this.peek_u8().ascii_str()}',
+						this.position())
 				}
 			}
 			this.col += 2
