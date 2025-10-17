@@ -34,12 +34,12 @@ fn (mut this Eval) eval_cond(c ast.Expr) !bool {
 }
 
 fn (mut this Eval) eval_assign(a ast.AssignExpr) !Value {
-	r := this.eval_expr(a.right)!
-	v := this.eval_name(a.left) or { panic('Cannot assign ${r}: ${err}') }
+	var_value := this.eval_expr(a.right)!
+	var_name := this.eval_name(a.left) or { panic('Cannot assign ${var_value}: ${err}') }
 
-	this.ctx.mem.store(v, r)
+	this.set_var(var_name, var_value)
 
-	return r
+	return var_value
 }
 
 fn (mut this Eval) eval_binary(b ast.BinaryExpr) !BinaryValue {
@@ -136,7 +136,7 @@ fn (this Eval) eval_literal(l ast.LiteralExpr) !Value {
 			v.int()
 		}
 		'name' {
-			this.ctx.mem.find(v) or { error('Undefined variable ${v}') }
+			this.get_var(v)
 		}
 		'char' {
 			v
