@@ -36,7 +36,7 @@ pub fn (mut this Parser) parse_block(delimiters []TokenType) !&Block {
 	for (this.remaining() > 0 && !this.current().in(delimiters)) {
 		s << this.parse_stmt()!
 		if !this.eat_any([.semicolon, .nl]) && !this.is_eof() {
-			return error('; or \\n expected at the end of statement')
+			return parser_error('; or \\n expected at the end of statement', this.current().pos)
 		}
 	}
 	if !(delimiters.len == 1 && TokenType.eof in delimiters) {
@@ -166,13 +166,7 @@ pub fn (mut this Parser) parse_literal_expr() !Expr {
 		mut expr := this.parse_expr()!
 		nt := this.current()
 		if !nt.is(.rpar) {
-			f := if nt.pos.file.len > 0 {
-				' in ${nt.pos.file}'
-			} else {
-				''
-			}
-
-			return error(') expected${f} on line ${nt.pos.line} at column ${nt.pos.column} but ${nt.val} provided')
+			return parser_error(') expected but ${nt.val} provided', t.pos)
 		}
 
 		this.next()
@@ -180,13 +174,7 @@ pub fn (mut this Parser) parse_literal_expr() !Expr {
 		return expr
 	}
 
-	f := if t.pos.file.len > 0 {
-		' in ${t.pos.file}'
-	} else {
-		''
-	}
-
-	return error('Unexpected token ${t.val}${f} on line ${t.pos.line} at column ${t.pos.column}')
+	return parser_error('Unexpected token ${t.val}', t.pos)
 }
 
 pub fn (mut this Parser) eat(type TokenType) bool {
@@ -205,18 +193,18 @@ pub fn (mut this Parser) eat_any(types []TokenType) bool {
 	return false
 }
 
-pub fn (mut this Parser) eat_or_fail(type TokenType, message string) !bool {
+pub fn (mut this Parser) eat_or_fail(type TokenType, msg string) !bool {
 	if this.eat(type) {
 		return true
 	}
-	return error(message)
+	return parser_error(msg, this.current().pos)
 }
 
-pub fn (mut this Parser) eat_any_or_fail(types []TokenType, message string) !bool {
+pub fn (mut this Parser) eat_any_or_fail(types []TokenType, msg string) !bool {
 	if this.eat_any(types) {
 		return true
 	}
-	return error(message)
+	return parser_error(msg, this.current().pos)
 }
 
 pub fn (this &Parser) is_eof() bool {

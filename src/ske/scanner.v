@@ -35,16 +35,16 @@ pub fn new_scanner(input string, options ScannerOptions) Scanner {
 	return Scanner.new(input, options)
 }
 
-pub fn tokenize(input string, options ScannerOptions) []Token {
+pub fn tokenize(input string, options ScannerOptions) ![]Token {
 	mut sc := new_scanner(input, options)
-	return sc.tokenize()
+	return sc.tokenize()!
 }
 
-pub fn (mut this Scanner) tokenize() []Token {
+pub fn (mut this Scanner) tokenize() ![]Token {
 	mut t := []Token{}
 
 	for this.next() != -1 && this.pos != this.ilen {
-		i := this.scan()
+		i := this.scan()!
 		if !i.is(.whitespace) {
 			t << i
 		}
@@ -53,7 +53,7 @@ pub fn (mut this Scanner) tokenize() []Token {
 	return t
 }
 
-pub fn (mut this Scanner) scan() Token {
+pub fn (mut this Scanner) scan() !Token {
 	c := this.current_u8()
 	match c {
 		`<` {
@@ -391,7 +391,7 @@ pub fn (mut this Scanner) scan() Token {
 			}
 		}
 		`'`, `"`, `\`` {
-			ss := this.scan_string(this.current())
+			ss := this.scan_string(this.current())!
 			if ss.len >= 1 {
 				return if c == `\`` {
 					this.token_backticks(ss)
@@ -451,7 +451,7 @@ pub fn (mut this Scanner) scan() Token {
 	return this.token_unknown(c.ascii_str())
 }
 
-pub fn (mut this Scanner) scan_string(delimiter int) string {
+pub fn (mut this Scanner) scan_string(delimiter int) !string {
 	this.col++
 	this.next()
 	mut v := ''
@@ -499,7 +499,7 @@ pub fn (mut this Scanner) scan_string(delimiter int) string {
 	}
 
 	if !end && this.peek() != -1 && this.current() == delimiter {
-		panic('End of string ${u8(delimiter).ascii_str()} expected in ${this.file} at ${this.line}:${this.col}')
+		return scanner_error('End of string ${u8(delimiter).ascii_str()} expected', this.position())
 	}
 
 	return v

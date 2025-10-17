@@ -1,21 +1,38 @@
 module ske
 
-pub struct SkeError {
+struct SkeError {
 	Error
-	file   string
-	line   string
-	column int
-	offset int
+	type string
+	msg  string
+	pos  Position
 }
 
-pub struct LexerError {
-	SkeError
+fn ske_error(type string, msg string, pos Position) SkeError {
+	return SkeError{
+		type: type
+		msg:  msg
+		pos:  pos
+	}
 }
 
-pub struct ParserError {
-	SkeError
+pub fn scanner_error(msg string, pos Position) SkeError {
+	return ske_error('scanner', msg, pos)
 }
 
-pub struct RuntimeError {
-	SkeError
+pub fn parser_error(msg string, pos Position) SkeError {
+	return ske_error('parser', msg, pos)
+}
+
+pub fn runtime_error(msg string, pos Position) SkeError {
+	return ske_error('runtime', msg, pos)
+}
+
+pub fn (e SkeError) msg() string {
+	mut msg := e.msg
+	if e.pos.file.len > 0 {
+		msg += ' in ${e.pos.file}'
+	}
+	msg += ' on line ${e.pos.line} at column ${e.pos.column}'
+
+	return 'Ske ${e.type} error: ${msg}'
 }
