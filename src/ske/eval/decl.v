@@ -16,10 +16,8 @@ fn (mut this Eval) decl(d ast.Decl) ! {
 fn (mut this Eval) decl_var(type string, expr ast.Expr) ! {
 	match expr {
 		ast.AssignExpr {
-			name := this.eval_name(expr.right)!
-			value := this.eval_expr(expr.left) or {
-				panic('Unable to evaluate ${type} ${name}: ${err}')
-			}
+			value := this.eval_expr(expr.right)!
+			name := this.eval_name(expr.left)!
 			this.init_var(type, name, value)
 		}
 		ast.LiteralExpr {
