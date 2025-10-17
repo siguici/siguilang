@@ -55,7 +55,7 @@ pub fn run_repl() bool {
 			code += if code == '' { line } else { ';${line}' }
 			run(code) or {
 				code = ''
-				eprintln(err)
+				eprintln(term.failed(err.msg()))
 			}
 			continue
 		}
