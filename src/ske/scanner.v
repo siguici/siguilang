@@ -2,30 +2,55 @@ module ske
 
 import strings.textscanner
 
-@[noinit]
-pub struct Scanner {
-	textscanner.TextScanner
-pub mut:
+@[params]
+pub struct ScannerOptions {
 	file string
+	dir  string
 	line int = 1
 	col  int = 1
 }
 
-@[params]
-pub struct ScannerOptions {
-	input string
-	file  string
-	line  int = 1
-	col   int = 1
+@[noinit]
+pub struct Scanner {
+	textscanner.TextScanner
+pub:
+	file string
+	dir  string
+pub mut:
+	line int = 1
+	col  int = 1
 }
 
-pub fn Scanner.new(o ScannerOptions) Scanner {
+pub fn Scanner.new(input string, options ScannerOptions) Scanner {
 	return Scanner{
-		TextScanner: textscanner.new(o.input)
-		line:        o.line
-		file:        o.file
-		col:         o.col
+		TextScanner: textscanner.new(input)
+		file:        options.file
+		dir:         options.dir
+		line:        options.line
+		col:         options.col
 	}
+}
+
+pub fn new_scanner(input string, options ScannerOptions) Scanner {
+	return Scanner.new(input, options)
+}
+
+pub fn tokenize(input string, options ScannerOptions) []Token {
+	mut sc := new_scanner(input, options)
+	return sc.tokenize()
+}
+
+pub fn (mut this Scanner) tokenize() []Token {
+	mut t := []Token{}
+
+	for this.next() != -1 && this.pos != this.ilen {
+		i := this.scan()
+		if !i.is(.whitespace) {
+			t << i
+		}
+	}
+
+	return t
 }
 
 pub fn (mut this Scanner) scan() Token {
@@ -37,7 +62,7 @@ pub fn (mut this Scanner) scan() Token {
 				`>` {
 					this.col++
 					this.next()
-					return this.tokenize_ne()
+					return this.token_ne()
 				}
 				`<` {
 					this.col++
@@ -46,35 +71,35 @@ pub fn (mut this Scanner) scan() Token {
 						`=` {
 							this.col++
 							this.next()
-							return this.tokenize_right_shift_assign()
+							return this.token_right_shift_assign()
 						}
 						else {
-							return this.tokenize_left_shift()
+							return this.token_left_shift()
 						}
 					}
 				}
 				`-` {
 					this.col++
 					this.next()
-					return this.tokenize_arrow()
+					return this.token_arrow()
 				}
 				`?` {
 					this.col++
 					this.next()
-					return this.tokenize_ltag()
+					return this.token_ltag()
 				}
 				`!` {
 					this.col++
 					this.next()
-					return this.tokenize_ldoc()
+					return this.token_ldoc()
 				}
 				`=` {
 					this.col++
 					this.next()
-					return this.tokenize_le()
+					return this.token_le()
 				}
 				else {
-					return this.tokenize_lt()
+					return this.token_lt()
 				}
 			}
 		}
@@ -91,28 +116,28 @@ pub fn (mut this Scanner) scan() Token {
 							return if this.peek_u8() == `=` {
 								this.col++
 								this.next()
-								this.tokenize_unsigned_right_shift_assign()
+								this.token_unsigned_right_shift_assign()
 							} else {
-								this.tokenize_unsigned_right_shift()
+								this.token_unsigned_right_shift()
 							}
 						}
 						`=` {
 							this.col++
 							this.next()
-							return this.tokenize_left_shift_assign()
+							return this.token_left_shift_assign()
 						}
 						else {
-							return this.tokenize_right_shift()
+							return this.token_right_shift()
 						}
 					}
 				}
 				`=` {
 					this.col++
 					this.next()
-					return this.tokenize_ge()
+					return this.token_ge()
 				}
 				else {
-					return this.tokenize_gt()
+					return this.token_gt()
 				}
 			}
 		}
@@ -127,15 +152,15 @@ pub fn (mut this Scanner) scan() Token {
 					return if this.peek_u8() == `=` {
 						this.col++
 						this.next()
-						this.tokenize_boolean_or_assign()
+						this.token_boolean_or_assign()
 					} else {
-						this.tokenize_or_assign()
+						this.token_or_assign()
 					}
 				} else {
-					return this.tokenize_logical_or()
+					return this.token_logical_or()
 				}
 			} else {
-				return this.tokenize_pipe()
+				return this.token_pipe()
 			}
 		}
 		`.` {
@@ -146,60 +171,60 @@ pub fn (mut this Scanner) scan() Token {
 				return if this.peek_u8() == `.` {
 					this.col++
 					this.next()
-					this.tokenize_ellipsis()
+					this.token_ellipsis()
 				} else {
-					this.tokenize_dotdot()
+					this.token_dotdot()
 				}
 			} else {
-				return this.tokenize_dot()
+				return this.token_dot()
 			}
 		}
 		`@`, `~`, `,`, `;`, `$`, `#`, `(`, `)`, `{`, `}`, `[`, `]` {
 			this.col++
 			return match c {
 				`@` {
-					this.tokenize_at()
+					this.token_at()
 				}
 				`~` {
-					this.tokenize_bit_not()
+					this.token_bit_not()
 				}
 				`,` {
-					this.tokenize_comma()
+					this.token_comma()
 				}
 				`$` {
-					mut t := this.tokenize_dollar()
+					mut t := this.token_dollar()
 					if this.peek_is_letter() {
 						id := this.scan_identifier()
 						if id.len >= 1 {
 							this.pos--
-							t = this.tokenize_name(id)
+							t = this.token_name(id)
 						}
 					}
 					return t
 				}
 				`#` {
-					this.tokenize_hash()
+					this.token_hash()
 				}
 				`(` {
-					this.tokenize_lpar()
+					this.token_lpar()
 				}
 				`)` {
-					this.tokenize_rpar()
+					this.token_rpar()
 				}
 				`{` {
-					this.tokenize_lcbr()
+					this.token_lcbr()
 				}
 				`}` {
-					this.tokenize_rcbr()
+					this.token_rcbr()
 				}
 				`[` {
-					this.tokenize_lsbr()
+					this.token_lsbr()
 				}
 				`]` {
-					this.tokenize_rsbr()
+					this.token_rsbr()
 				}
 				else {
-					this.tokenize_semicolon()
+					this.token_semicolon()
 				}
 			}
 		}
@@ -209,24 +234,24 @@ pub fn (mut this Scanner) scan() Token {
 				this.col += 2
 				this.pos += 2
 				return if this.current_u8() == `s` {
-					this.tokenize_not_is()
+					this.token_not_is()
 				} else {
-					this.tokenize_not_in()
+					this.token_not_in()
 				}
 			}
 			match this.peek_u8() {
 				`=` {
 					this.col++
 					this.next()
-					return this.tokenize_ne()
+					return this.token_ne()
 				}
 				`>` {
 					this.col++
 					this.next()
-					return this.tokenize_rdoc()
+					return this.token_rdoc()
 				}
 				else {
-					return this.tokenize_not()
+					return this.token_not()
 				}
 			}
 		}
@@ -239,17 +264,17 @@ pub fn (mut this Scanner) scan() Token {
 					if this.peek_u8() == `=` {
 						this.col++
 						this.next()
-						return this.tokenize_boolean_and_assign()
+						return this.token_boolean_and_assign()
 					}
-					return this.tokenize_and()
+					return this.token_and()
 				}
 				`=` {
 					this.col++
 					this.next()
-					return this.tokenize_and_assign()
+					return this.token_and_assign()
 				}
 				else {
-					return this.tokenize_amp()
+					return this.token_amp()
 				}
 			}
 		}
@@ -259,10 +284,10 @@ pub fn (mut this Scanner) scan() Token {
 				`>` {
 					this.col++
 					this.next()
-					return this.tokenize_rtag()
+					return this.token_rtag()
 				}
 				else {
-					return this.tokenize_question()
+					return this.token_question()
 				}
 			}
 		}
@@ -271,27 +296,27 @@ pub fn (mut this Scanner) scan() Token {
 			if this.peek_u8() == `=` {
 				this.col++
 				this.next()
-				return this.tokenize_eq()
+				return this.token_eq()
 			}
-			return this.tokenize_assign()
+			return this.token_assign()
 		}
 		`:` {
 			this.col++
 			if this.peek_u8() == `=` {
 				this.col++
 				this.next()
-				return this.tokenize_decl_assign()
+				return this.token_decl_assign()
 			}
-			return this.tokenize_colon()
+			return this.token_colon()
 		}
 		`^` {
 			this.col++
 			if this.peek_u8() == `=` {
 				this.col++
 				this.next()
-				return this.tokenize_xor_assign()
+				return this.token_xor_assign()
 			}
-			return this.tokenize_xor()
+			return this.token_xor()
 		}
 		`*` {
 			this.col++
@@ -299,15 +324,15 @@ pub fn (mut this Scanner) scan() Token {
 				`*` {
 					this.col++
 					this.next()
-					return this.tokenize_power()
+					return this.token_power()
 				}
 				`=` {
 					this.col++
 					this.next()
-					return this.tokenize_mul_assign()
+					return this.token_mul_assign()
 				}
 				else {
-					return this.tokenize_mul()
+					return this.token_mul()
 				}
 			}
 		}
@@ -316,18 +341,18 @@ pub fn (mut this Scanner) scan() Token {
 			if this.peek_u8() == `=` {
 				this.col++
 				this.next()
-				return this.tokenize_div_assign()
+				return this.token_div_assign()
 			}
-			return this.tokenize_div()
+			return this.token_div()
 		}
 		`%` {
 			this.col++
 			if this.peek_u8() == `=` {
 				this.col++
 				this.next()
-				return this.tokenize_mod_assign()
+				return this.token_mod_assign()
 			}
-			return this.tokenize_mod()
+			return this.token_mod()
 		}
 		`+` {
 			this.col++
@@ -335,15 +360,15 @@ pub fn (mut this Scanner) scan() Token {
 				`+` {
 					this.col++
 					this.next()
-					return this.tokenize_inc()
+					return this.token_inc()
 				}
 				`=` {
 					this.col++
 					this.next()
-					return this.tokenize_plus_assign()
+					return this.token_plus_assign()
 				}
 				else {
-					return this.tokenize_plus()
+					return this.token_plus()
 				}
 			}
 		}
@@ -353,15 +378,15 @@ pub fn (mut this Scanner) scan() Token {
 				`-` {
 					this.col++
 					this.next()
-					return this.tokenize_dec()
+					return this.token_dec()
 				}
 				`=` {
 					this.col++
 					this.next()
-					return this.tokenize_minus_assign()
+					return this.token_minus_assign()
 				}
 				else {
-					return this.tokenize_minus()
+					return this.token_minus()
 				}
 			}
 		}
@@ -369,11 +394,11 @@ pub fn (mut this Scanner) scan() Token {
 			ss := this.scan_string(this.current())
 			if ss.len >= 1 {
 				return if c == `\`` {
-					this.tokenize_backticks(ss)
+					this.token_backticks(ss)
 				} else if c == `'` {
-					this.tokenize_char(ss)
+					this.token_char(ss)
 				} else {
-					this.tokenize_string(ss)
+					this.token_string(ss)
 				}
 			}
 		}
@@ -381,19 +406,19 @@ pub fn (mut this Scanner) scan() Token {
 			nl := this.scan_newline()
 			if nl.len >= 1 {
 				this.pos--
-				return this.tokenize_nl()
+				return this.token_nl()
 			}
 
 			sp := this.scan_whitespace()
 			if sp.len >= 1 {
 				this.pos--
-				return this.tokenize_whitespace(sp)
+				return this.token_whitespace(sp)
 			}
 
 			nb := this.scan_number()
 			if nb.len >= 1 {
 				this.pos--
-				return this.tokenize_number(nb)
+				return this.token_number(nb)
 			}
 
 			id := this.scan_identifier()
@@ -401,29 +426,29 @@ pub fn (mut this Scanner) scan() Token {
 				this.pos--
 				return match id {
 					'true', 'false' {
-						this.tokenize_bool(id)
+						this.token_bool(id)
 					}
 					'print' {
-						this.tokenize_print()
+						this.token_print()
 					}
 					'scan' {
-						this.tokenize_scan()
+						this.token_scan()
 					}
 					'if' {
-						this.tokenize_if()
+						this.token_if()
 					}
 					'else' {
-						this.tokenize_else()
+						this.token_else()
 					}
 					else {
-						this.tokenize_name(id)
+						this.token_name(id)
 					}
 				}
 			}
 		}
 	}
 
-	return this.tokenize_unknown(c.ascii_str())
+	return this.token_unknown(c.ascii_str())
 }
 
 pub fn (mut this Scanner) scan_string(delimiter int) string {
@@ -658,434 +683,434 @@ pub fn (mut this Scanner) position_n(n int) Position {
 	)
 }
 
-pub fn (mut this Scanner) tokenize(type TokenType, value string) Token {
+pub fn (mut this Scanner) token(type TokenType, value string) Token {
 	return new_token(type, value, this.position_n(value.len))
 }
 
-pub fn (mut this Scanner) tokenize_keyword(keyword TokenType) Token {
+pub fn (mut this Scanner) keyword(keyword TokenType) Token {
 	return new_keyword(keyword, this.position_n(token_to_str(keyword).len))
 }
 
-pub fn (mut this Scanner) tokenize_as() Token {
-	return this.tokenize_keyword(.as)
+pub fn (mut this Scanner) token_as() Token {
+	return this.keyword(.as)
 }
 
-pub fn (mut this Scanner) tokenize_assert() Token {
-	return this.tokenize_keyword(.assert)
+pub fn (mut this Scanner) token_assert() Token {
+	return this.keyword(.assert)
 }
 
-pub fn (mut this Scanner) tokenize_await() Token {
-	return this.tokenize_keyword(.await)
+pub fn (mut this Scanner) token_await() Token {
+	return this.keyword(.await)
 }
 
-pub fn (mut this Scanner) tokenize_break() Token {
-	return this.tokenize_keyword(.break)
+pub fn (mut this Scanner) token_break() Token {
+	return this.keyword(.break)
 }
 
-pub fn (mut this Scanner) tokenize_case() Token {
-	return this.tokenize_keyword(.case)
+pub fn (mut this Scanner) token_case() Token {
+	return this.keyword(.case)
 }
 
-pub fn (mut this Scanner) tokenize_continue() Token {
-	return this.tokenize_keyword(.continue)
+pub fn (mut this Scanner) token_continue() Token {
+	return this.keyword(.continue)
 }
 
-pub fn (mut this Scanner) tokenize_debug() Token {
-	return this.tokenize_keyword(.debug)
+pub fn (mut this Scanner) token_debug() Token {
+	return this.keyword(.debug)
 }
 
-pub fn (mut this Scanner) tokenize_do() Token {
-	return this.tokenize_keyword(.do)
+pub fn (mut this Scanner) token_do() Token {
+	return this.keyword(.do)
 }
 
-pub fn (mut this Scanner) tokenize_dump() Token {
-	return this.tokenize_keyword(.dump)
+pub fn (mut this Scanner) token_dump() Token {
+	return this.keyword(.dump)
 }
 
-pub fn (mut this Scanner) tokenize_else() Token {
-	return this.tokenize_keyword(.else)
+pub fn (mut this Scanner) token_else() Token {
+	return this.keyword(.else)
 }
 
-pub fn (mut this Scanner) tokenize_emit() Token {
-	return this.tokenize_keyword(.emit)
+pub fn (mut this Scanner) token_emit() Token {
+	return this.keyword(.emit)
 }
 
-pub fn (mut this Scanner) tokenize_ensure() Token {
-	return this.tokenize_keyword(.ensure)
+pub fn (mut this Scanner) token_ensure() Token {
+	return this.keyword(.ensure)
 }
 
-pub fn (mut this Scanner) tokenize_exit() Token {
-	return this.tokenize_keyword(.exit)
+pub fn (mut this Scanner) token_exit() Token {
+	return this.keyword(.exit)
 }
 
-pub fn (mut this Scanner) tokenize_false() Token {
-	return this.tokenize_keyword(.false)
+pub fn (mut this Scanner) token_false() Token {
+	return this.keyword(.false)
 }
 
-pub fn (mut this Scanner) tokenize_for() Token {
-	return this.tokenize_keyword(.for)
+pub fn (mut this Scanner) token_for() Token {
+	return this.keyword(.for)
 }
 
-pub fn (mut this Scanner) tokenize_if() Token {
-	return this.tokenize_keyword(.if)
+pub fn (mut this Scanner) token_if() Token {
+	return this.keyword(.if)
 }
 
-pub fn (mut this Scanner) tokenize_in() Token {
-	return this.tokenize_keyword(.in)
+pub fn (mut this Scanner) token_in() Token {
+	return this.keyword(.in)
 }
 
-pub fn (mut this Scanner) tokenize_is() Token {
-	return this.tokenize_keyword(.is)
+pub fn (mut this Scanner) token_is() Token {
+	return this.keyword(.is)
 }
 
-pub fn (mut this Scanner) tokenize_let() Token {
-	return this.tokenize_keyword(.let)
+pub fn (mut this Scanner) token_let() Token {
+	return this.keyword(.let)
 }
 
-pub fn (mut this Scanner) tokenize_nil() Token {
-	return this.tokenize_keyword(.nil)
+pub fn (mut this Scanner) token_nil() Token {
+	return this.keyword(.nil)
 }
 
-pub fn (mut this Scanner) tokenize_on() Token {
-	return this.tokenize_keyword(.on)
+pub fn (mut this Scanner) token_on() Token {
+	return this.keyword(.on)
 }
 
-pub fn (mut this Scanner) tokenize_print() Token {
-	return this.tokenize_keyword(.print)
+pub fn (mut this Scanner) token_print() Token {
+	return this.keyword(.print)
 }
 
-pub fn (mut this Scanner) tokenize_public() Token {
-	return this.tokenize_keyword(.public)
+pub fn (mut this Scanner) token_public() Token {
+	return this.keyword(.public)
 }
 
-pub fn (mut this Scanner) tokenize_return() Token {
-	return this.tokenize_keyword(.return)
+pub fn (mut this Scanner) token_return() Token {
+	return this.keyword(.return)
 }
 
-pub fn (mut this Scanner) tokenize_scan() Token {
-	return this.tokenize_keyword(.scan)
+pub fn (mut this Scanner) token_scan() Token {
+	return this.keyword(.scan)
 }
 
-pub fn (mut this Scanner) tokenize_spawn() Token {
-	return this.tokenize_keyword(.spawn)
+pub fn (mut this Scanner) token_spawn() Token {
+	return this.keyword(.spawn)
 }
 
-pub fn (mut this Scanner) tokenize_static() Token {
-	return this.tokenize_keyword(.static)
+pub fn (mut this Scanner) token_static() Token {
+	return this.keyword(.static)
 }
 
-pub fn (mut this Scanner) tokenize_true() Token {
-	return this.tokenize_keyword(.true)
+pub fn (mut this Scanner) token_true() Token {
+	return this.keyword(.true)
 }
 
-pub fn (mut this Scanner) tokenize_type() Token {
-	return this.tokenize_keyword(.type)
+pub fn (mut this Scanner) token_type() Token {
+	return this.keyword(.type)
 }
 
-pub fn (mut this Scanner) tokenize_unset() Token {
-	return this.tokenize_keyword(.unset)
+pub fn (mut this Scanner) token_unset() Token {
+	return this.keyword(.unset)
 }
 
-pub fn (mut this Scanner) tokenize_use() Token {
-	return this.tokenize_keyword(.use)
+pub fn (mut this Scanner) token_use() Token {
+	return this.keyword(.use)
 }
 
-pub fn (mut this Scanner) tokenize_amp() Token {
-	return this.tokenize(.amp, '&')
+pub fn (mut this Scanner) token_amp() Token {
+	return this.token(.amp, '&')
 }
 
-pub fn (mut this Scanner) tokenize_and() Token {
-	return this.tokenize(.and, '&&')
+pub fn (mut this Scanner) token_and() Token {
+	return this.token(.and, '&&')
 }
 
-pub fn (mut this Scanner) tokenize_and_assign() Token {
-	return this.tokenize(.and_assign, '&=')
+pub fn (mut this Scanner) token_and_assign() Token {
+	return this.token(.and_assign, '&=')
 }
 
-pub fn (mut this Scanner) tokenize_arrow() Token {
-	return this.tokenize(.arrow, '<-')
+pub fn (mut this Scanner) token_arrow() Token {
+	return this.token(.arrow, '<-')
 }
 
-pub fn (mut this Scanner) tokenize_assign() Token {
-	return this.tokenize(.assign, '=')
+pub fn (mut this Scanner) token_assign() Token {
+	return this.token(.assign, '=')
 }
 
-pub fn (mut this Scanner) tokenize_at() Token {
-	return this.tokenize(.at, '@')
+pub fn (mut this Scanner) token_at() Token {
+	return this.token(.at, '@')
 }
 
-pub fn (mut this Scanner) tokenize_bit_not() Token {
-	return this.tokenize(.bit_not, '~')
+pub fn (mut this Scanner) token_bit_not() Token {
+	return this.token(.bit_not, '~')
 }
 
-pub fn (mut this Scanner) tokenize_bool(val string) Token {
-	return this.tokenize(.bool, val)
+pub fn (mut this Scanner) token_bool(val string) Token {
+	return this.token(.bool, val)
 }
 
-pub fn (mut this Scanner) tokenize_boolean_and_assign() Token {
-	return this.tokenize(.boolean_and_assign, '&&=')
+pub fn (mut this Scanner) token_boolean_and_assign() Token {
+	return this.token(.boolean_and_assign, '&&=')
 }
 
-pub fn (mut this Scanner) tokenize_boolean_or_assign() Token {
-	return this.tokenize(.boolean_or_assign, '||=')
+pub fn (mut this Scanner) token_boolean_or_assign() Token {
+	return this.token(.boolean_or_assign, '||=')
 }
 
-pub fn (mut this Scanner) tokenize_char(val string) Token {
-	return this.tokenize(.char, val)
+pub fn (mut this Scanner) token_char(val string) Token {
+	return this.token(.char, val)
 }
 
-pub fn (mut this Scanner) tokenize_colon() Token {
-	return this.tokenize(.colon, ':')
+pub fn (mut this Scanner) token_colon() Token {
+	return this.token(.colon, ':')
 }
 
-pub fn (mut this Scanner) tokenize_comma() Token {
-	return this.tokenize(.comma, ',')
+pub fn (mut this Scanner) token_comma() Token {
+	return this.token(.comma, ',')
 }
 
-pub fn (mut this Scanner) tokenize_comment(val string) Token {
-	return this.tokenize(.comment, val)
+pub fn (mut this Scanner) token_comment(val string) Token {
+	return this.token(.comment, val)
 }
 
-pub fn (mut this Scanner) tokenize_dec() Token {
-	return this.tokenize(.dec, '--')
+pub fn (mut this Scanner) token_dec() Token {
+	return this.token(.dec, '--')
 }
 
-pub fn (mut this Scanner) tokenize_decl_assign() Token {
-	return this.tokenize(.decl_assign, ':=')
+pub fn (mut this Scanner) token_decl_assign() Token {
+	return this.token(.decl_assign, ':=')
 }
 
-pub fn (mut this Scanner) tokenize_div() Token {
-	return this.tokenize(.div, '/')
+pub fn (mut this Scanner) token_div() Token {
+	return this.token(.div, '/')
 }
 
-pub fn (mut this Scanner) tokenize_div_assign() Token {
-	return this.tokenize(.div_assign, '/=')
+pub fn (mut this Scanner) token_div_assign() Token {
+	return this.token(.div_assign, '/=')
 }
 
-pub fn (mut this Scanner) tokenize_dollar() Token {
-	return this.tokenize(.dollar, '\$')
+pub fn (mut this Scanner) token_dollar() Token {
+	return this.token(.dollar, '\$')
 }
 
-pub fn (mut this Scanner) tokenize_dot() Token {
-	return this.tokenize(.dot, '.')
+pub fn (mut this Scanner) token_dot() Token {
+	return this.token(.dot, '.')
 }
 
-pub fn (mut this Scanner) tokenize_dotdot() Token {
-	return this.tokenize(.dotdot, '..')
+pub fn (mut this Scanner) token_dotdot() Token {
+	return this.token(.dotdot, '..')
 }
 
-pub fn (mut this Scanner) tokenize_ellipsis() Token {
-	return this.tokenize(.ellipsis, '...')
+pub fn (mut this Scanner) token_ellipsis() Token {
+	return this.token(.ellipsis, '...')
 }
 
-pub fn (mut this Scanner) tokenize_eof(val string) Token {
-	return this.tokenize(.eof, val)
+pub fn (mut this Scanner) token_eof(val string) Token {
+	return this.token(.eof, val)
 }
 
-pub fn (mut this Scanner) tokenize_eq() Token {
-	return this.tokenize(.eq, '==')
+pub fn (mut this Scanner) token_eq() Token {
+	return this.token(.eq, '==')
 }
 
-pub fn (mut this Scanner) tokenize_float(val string) Token {
-	return this.tokenize(.float, val)
+pub fn (mut this Scanner) token_float(val string) Token {
+	return this.token(.float, val)
 }
 
-pub fn (mut this Scanner) tokenize_ge() Token {
-	return this.tokenize(.ge, '>=')
+pub fn (mut this Scanner) token_ge() Token {
+	return this.token(.ge, '>=')
 }
 
-pub fn (mut this Scanner) tokenize_gt() Token {
-	return this.tokenize(.gt, '>')
+pub fn (mut this Scanner) token_gt() Token {
+	return this.token(.gt, '>')
 }
 
-pub fn (mut this Scanner) tokenize_hash() Token {
-	return this.tokenize(.hash, '#')
+pub fn (mut this Scanner) token_hash() Token {
+	return this.token(.hash, '#')
 }
 
-pub fn (mut this Scanner) tokenize_inc() Token {
-	return this.tokenize(.inc, '++')
+pub fn (mut this Scanner) token_inc() Token {
+	return this.token(.inc, '++')
 }
 
-pub fn (mut this Scanner) tokenize_int(val string) Token {
-	return this.tokenize(.int, val)
+pub fn (mut this Scanner) token_int(val string) Token {
+	return this.token(.int, val)
 }
 
-pub fn (mut this Scanner) tokenize_ldoc() Token {
-	return this.tokenize(.ldoc, '<!')
+pub fn (mut this Scanner) token_ldoc() Token {
+	return this.token(.ldoc, '<!')
 }
 
-pub fn (mut this Scanner) tokenize_lcbr() Token {
-	return this.tokenize(.lcbr, '{')
+pub fn (mut this Scanner) token_lcbr() Token {
+	return this.token(.lcbr, '{')
 }
 
-pub fn (mut this Scanner) tokenize_le() Token {
-	return this.tokenize(.le, '<=')
+pub fn (mut this Scanner) token_le() Token {
+	return this.token(.le, '<=')
 }
 
-pub fn (mut this Scanner) tokenize_left_shift() Token {
-	return this.tokenize(.left_shift, '<<')
+pub fn (mut this Scanner) token_left_shift() Token {
+	return this.token(.left_shift, '<<')
 }
 
-pub fn (mut this Scanner) tokenize_left_shift_assign() Token {
-	return this.tokenize(.left_shift_assign, '>>=')
+pub fn (mut this Scanner) token_left_shift_assign() Token {
+	return this.token(.left_shift_assign, '>>=')
 }
 
-pub fn (mut this Scanner) tokenize_logical_or() Token {
-	return this.tokenize(.logical_or, '||')
+pub fn (mut this Scanner) token_logical_or() Token {
+	return this.token(.logical_or, '||')
 }
 
-pub fn (mut this Scanner) tokenize_lpar() Token {
-	return this.tokenize(.lpar, '(')
+pub fn (mut this Scanner) token_lpar() Token {
+	return this.token(.lpar, '(')
 }
 
-pub fn (mut this Scanner) tokenize_lsbr() Token {
-	return this.tokenize(.lsbr, '[')
+pub fn (mut this Scanner) token_lsbr() Token {
+	return this.token(.lsbr, '[')
 }
 
-pub fn (mut this Scanner) tokenize_lt() Token {
-	return this.tokenize(.lt, '<')
+pub fn (mut this Scanner) token_lt() Token {
+	return this.token(.lt, '<')
 }
 
-pub fn (mut this Scanner) tokenize_ltag() Token {
-	return this.tokenize(.ltag, '<?')
+pub fn (mut this Scanner) token_ltag() Token {
+	return this.token(.ltag, '<?')
 }
 
-pub fn (mut this Scanner) tokenize_minus() Token {
-	return this.tokenize(.minus, '-')
+pub fn (mut this Scanner) token_minus() Token {
+	return this.token(.minus, '-')
 }
 
-pub fn (mut this Scanner) tokenize_minus_assign() Token {
-	return this.tokenize(.minus_assign, '-=')
+pub fn (mut this Scanner) token_minus_assign() Token {
+	return this.token(.minus_assign, '-=')
 }
 
-pub fn (mut this Scanner) tokenize_mod() Token {
-	return this.tokenize(.mod, '%')
+pub fn (mut this Scanner) token_mod() Token {
+	return this.token(.mod, '%')
 }
 
-pub fn (mut this Scanner) tokenize_mod_assign() Token {
-	return this.tokenize(.mod_assign, '%=')
+pub fn (mut this Scanner) token_mod_assign() Token {
+	return this.token(.mod_assign, '%=')
 }
 
-pub fn (mut this Scanner) tokenize_mul() Token {
-	return this.tokenize(.mul, '*')
+pub fn (mut this Scanner) token_mul() Token {
+	return this.token(.mul, '*')
 }
 
-pub fn (mut this Scanner) tokenize_mul_assign() Token {
-	return this.tokenize(.mul_assign, '*=')
+pub fn (mut this Scanner) token_mul_assign() Token {
+	return this.token(.mul_assign, '*=')
 }
 
-pub fn (mut this Scanner) tokenize_name(val string) Token {
-	return this.tokenize(.name, val)
+pub fn (mut this Scanner) token_name(val string) Token {
+	return this.token(.name, val)
 }
 
-pub fn (mut this Scanner) tokenize_ne() Token {
-	return this.tokenize(.ne, '!=')
+pub fn (mut this Scanner) token_ne() Token {
+	return this.token(.ne, '!=')
 }
 
-pub fn (mut this Scanner) tokenize_nl() Token {
-	return this.tokenize(.nl, '\n')
+pub fn (mut this Scanner) token_nl() Token {
+	return this.token(.nl, '\n')
 }
 
-pub fn (mut this Scanner) tokenize_not() Token {
-	return this.tokenize(.not, '!')
+pub fn (mut this Scanner) token_not() Token {
+	return this.token(.not, '!')
 }
 
-pub fn (mut this Scanner) tokenize_not_in() Token {
-	return this.tokenize(.not_in, '!in')
+pub fn (mut this Scanner) token_not_in() Token {
+	return this.token(.not_in, '!in')
 }
 
-pub fn (mut this Scanner) tokenize_not_is() Token {
-	return this.tokenize(.not_is, '!is')
+pub fn (mut this Scanner) token_not_is() Token {
+	return this.token(.not_is, '!is')
 }
 
-pub fn (mut this Scanner) tokenize_number(val string) Token {
-	return this.tokenize(.number, val)
+pub fn (mut this Scanner) token_number(val string) Token {
+	return this.token(.number, val)
 }
 
-pub fn (mut this Scanner) tokenize_or_assign() Token {
-	return this.tokenize(.or_assign, '|=')
+pub fn (mut this Scanner) token_or_assign() Token {
+	return this.token(.or_assign, '|=')
 }
 
-pub fn (mut this Scanner) tokenize_pipe() Token {
-	return this.tokenize(.pipe, '|')
+pub fn (mut this Scanner) token_pipe() Token {
+	return this.token(.pipe, '|')
 }
 
-pub fn (mut this Scanner) tokenize_plus() Token {
-	return this.tokenize(.plus, '+')
+pub fn (mut this Scanner) token_plus() Token {
+	return this.token(.plus, '+')
 }
 
-pub fn (mut this Scanner) tokenize_plus_assign() Token {
-	return this.tokenize(.plus_assign, '+=')
+pub fn (mut this Scanner) token_plus_assign() Token {
+	return this.token(.plus_assign, '+=')
 }
 
-pub fn (mut this Scanner) tokenize_power() Token {
-	return this.tokenize(.power, '**')
+pub fn (mut this Scanner) token_power() Token {
+	return this.token(.power, '**')
 }
 
-pub fn (mut this Scanner) tokenize_question() Token {
-	return this.tokenize(.question, '?')
+pub fn (mut this Scanner) token_question() Token {
+	return this.token(.question, '?')
 }
 
-pub fn (mut this Scanner) tokenize_rcbr() Token {
-	return this.tokenize(.rcbr, '}')
+pub fn (mut this Scanner) token_rcbr() Token {
+	return this.token(.rcbr, '}')
 }
 
-pub fn (mut this Scanner) tokenize_rdoc() Token {
-	return this.tokenize(.rdoc, '!>')
+pub fn (mut this Scanner) token_rdoc() Token {
+	return this.token(.rdoc, '!>')
 }
 
-pub fn (mut this Scanner) tokenize_right_shift() Token {
-	return this.tokenize(.right_shift, '>>')
+pub fn (mut this Scanner) token_right_shift() Token {
+	return this.token(.right_shift, '>>')
 }
 
-pub fn (mut this Scanner) tokenize_right_shift_assign() Token {
-	return this.tokenize(.right_shift_assign, '<<=')
+pub fn (mut this Scanner) token_right_shift_assign() Token {
+	return this.token(.right_shift_assign, '<<=')
 }
 
-pub fn (mut this Scanner) tokenize_rpar() Token {
-	return this.tokenize(.rpar, ')')
+pub fn (mut this Scanner) token_rpar() Token {
+	return this.token(.rpar, ')')
 }
 
-pub fn (mut this Scanner) tokenize_rsbr() Token {
-	return this.tokenize(.rsbr, ']')
+pub fn (mut this Scanner) token_rsbr() Token {
+	return this.token(.rsbr, ']')
 }
 
-pub fn (mut this Scanner) tokenize_rtag() Token {
-	return this.tokenize(.rtag, '?>')
+pub fn (mut this Scanner) token_rtag() Token {
+	return this.token(.rtag, '?>')
 }
 
-pub fn (mut this Scanner) tokenize_semicolon() Token {
-	return this.tokenize(.semicolon, ';')
+pub fn (mut this Scanner) token_semicolon() Token {
+	return this.token(.semicolon, ';')
 }
 
-pub fn (mut this Scanner) tokenize_backticks(val string) Token {
-	return this.tokenize(.backticks, val)
+pub fn (mut this Scanner) token_backticks(val string) Token {
+	return this.token(.backticks, val)
 }
 
-pub fn (mut this Scanner) tokenize_string(val string) Token {
-	return this.tokenize(.string, val)
+pub fn (mut this Scanner) token_string(val string) Token {
+	return this.token(.string, val)
 }
 
-pub fn (mut this Scanner) tokenize_unknown(val string) Token {
-	return this.tokenize(.unknown, val)
+pub fn (mut this Scanner) token_unknown(val string) Token {
+	return this.token(.unknown, val)
 }
 
-pub fn (mut this Scanner) tokenize_unsigned_right_shift() Token {
-	return this.tokenize(.unsigned_right_shift, '>>>')
+pub fn (mut this Scanner) token_unsigned_right_shift() Token {
+	return this.token(.unsigned_right_shift, '>>>')
 }
 
-pub fn (mut this Scanner) tokenize_unsigned_right_shift_assign() Token {
-	return this.tokenize(.unsigned_right_shift_assign, '>>>=')
+pub fn (mut this Scanner) token_unsigned_right_shift_assign() Token {
+	return this.token(.unsigned_right_shift_assign, '>>>=')
 }
 
-pub fn (mut this Scanner) tokenize_whitespace(val string) Token {
-	return this.tokenize(.whitespace, val)
+pub fn (mut this Scanner) token_whitespace(val string) Token {
+	return this.token(.whitespace, val)
 }
 
-pub fn (mut this Scanner) tokenize_xor() Token {
-	return this.tokenize(.xor, '^')
+pub fn (mut this Scanner) token_xor() Token {
+	return this.token(.xor, '^')
 }
 
-pub fn (mut this Scanner) tokenize_xor_assign() Token {
-	return this.tokenize(.xor_assign, '^=')
+pub fn (mut this Scanner) token_xor_assign() Token {
+	return this.token(.xor_assign, '^=')
 }

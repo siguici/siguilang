@@ -39,8 +39,9 @@ pub fn run_file(file string, params RunParams) ! {
 }
 
 pub fn run_code(code string, params RunParams) ! {
-	mut t := parse(lex(code: code, file: params.path, dir: params.root))
-	interpret(mut t)!
+	t := tokenize(code, file: params.path, dir: params.root)
+	mut p := parse(t)
+	interpret(mut p)!
 }
 
 pub fn run_many(inputs []string, params RunParams) ! {
