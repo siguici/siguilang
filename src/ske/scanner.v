@@ -395,8 +395,6 @@ pub fn (mut this Scanner) scan() !Token {
 			if ss.len >= 1 {
 				return if c == `\`` {
 					this.token_backticks(ss)
-				} else if c == `'` {
-					this.token_char(ss)
 				} else {
 					this.token_string(ss)
 				}
