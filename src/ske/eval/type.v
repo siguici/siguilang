@@ -2,6 +2,12 @@ module eval
 
 pub type Type = BuiltinType | NamedType | UnionType | IntersectionType
 
+@[params]
+pub struct TypeOption {
+pub mut:
+	nullable bool
+}
+
 pub enum BuiltinType {
 	bool
 	int
@@ -10,14 +16,14 @@ pub enum BuiltinType {
 }
 
 pub struct NamedType {
-	name     string
-	nullable bool
+	TypeOption
+	name string
 }
 
 struct GroupedType {
+	TypeOption
 mut:
-	types    []Type
-	nullable bool
+	types []Type
 }
 
 pub struct UnionType {
@@ -26,4 +32,19 @@ pub struct UnionType {
 
 pub struct IntersectionType {
 	GroupedType
+}
+
+pub fn Type.from(type string, opt TypeOption) Type {
+	return if t := BuiltinType.from(type) {
+		t
+	} else {
+		NamedType{
+			name:     type
+			nullable: opt.nullable
+		}
+	}
+}
+
+pub fn (this BuiltinType) is(type BuiltinType) bool {
+	return this == type
 }

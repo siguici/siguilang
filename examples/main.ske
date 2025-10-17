@@ -9,7 +9,7 @@ $b = 5 + 9 / 3
 
 print $b / -$a * 3
 
-float p = 5**2**2
+int p = 5**2**2
 print p
 
 $c = scan 'How old are you?', '\n> '

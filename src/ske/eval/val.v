@@ -6,6 +6,51 @@ type BinaryValue = int | string
 struct Nil {}
 
 @[inline]
+fn (v Value) is_bool() bool {
+	return if v is bool {
+		true
+	} else {
+		false
+	}
+}
+
+@[inline]
+fn (v Value) is_int() bool {
+	return if v is int {
+		true
+	} else {
+		false
+	}
+}
+
+@[inline]
+fn (v Value) is_float() bool {
+	return if v is f64 {
+		true
+	} else {
+		false
+	}
+}
+
+@[inline]
+fn (v Value) is_string() bool {
+	return if v is string {
+		true
+	} else {
+		false
+	}
+}
+
+@[inline]
+fn (v Value) is_nil() bool {
+	return if v is Nil {
+		true
+	} else {
+		false
+	}
+}
+
+@[inline]
 fn (v Value) to_int() int {
 	return match v {
 		string {

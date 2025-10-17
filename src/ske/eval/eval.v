@@ -1,6 +1,7 @@
 module eval
 
 import ske.ast
+import ske.checker { is_bool, is_float, is_int }
 
 pub struct Var {
 pub mut:
@@ -28,13 +29,24 @@ pub fn eval(program ast.Program) ! {
 	ev.eval(program)!
 }
 
-pub fn (mut this Eval) init_var(type string, name string, value Value) {
-	this.vars[name] = Var{
-		type:    NamedType{
-			name: type
+pub fn (mut this Eval) init_var(type string, name string, value Value) ! {
+	var_type := Type.from(type)
+	is_valid := if value !is Nil && var_type is BuiltinType {
+		(var_type.is(.bool) && value.is_bool())
+			|| (var_type.is(.int) && value.is_int())
+			|| (var_type.is(.float) && value.is_float())
+			|| (var_type.is(.string) && value.is_string())
+	} else {
+		true
+	}
+	if !is_valid {
+		return error('Invalid type for variable ${name} (got ${value.type_name()} expected ${type})')
+	} else {
+		this.vars[name] = Var{
+			type:    Type.from(type)
+			value:   value
+			mutable: name.starts_with('\$')
 		}
-		value:   value
-		mutable: name.starts_with('\$')
 	}
 }
 
