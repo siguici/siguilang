@@ -4,6 +4,8 @@
 designed for simplicity, clarity, and expressive power.  
 Built with ❤️ in [Vlang](https://vlang.io).
 
+[![Build Status](https://github.com/siguici/ske/workflows/CI/badge.svg)](https://github.com/siguici/ske/actions)
+
 ---
 
 ## 🚀 Features
@@ -35,59 +37,33 @@ paving the way for native support in environments like TypeScript, PHP, and Vlan
 git clone https://github.com/siguici/ske
 cd ske
 v .
-./ske example.ske
+./ske examples
 ````
 
 Or build for production:
 
 ```bash
 v -prod .
-./ske example.ske
+./ske examples
 ```
-
----
-
-## 📂 Project Structure
-
-```tree
-ske/
-├── src/               # Parser, Interpreter, Compiler
-│   ├── parser.v
-│   ├── interpreter.v
-│   └── compiler.v
-├── examples/          # Example `.ske` files
-├── LICENSE.md
-└── README.md
-```
-
----
 
 ## 🧪 Quick Start
 
-Create a file `example.ske`:
+Create a file `hello.ske`:
 
 ```ske
-print("Hello from Ske!")
+string name = scan 'Enter your name: '
+if name {
+  print 'Hello ', name, '!'
+} else {
+  print "Hello World!"
+}
 ```
 
-Run the server:
+Then run it:
 
 ```bash
-./ske serve
-```
-
-Then open your browser:
-
-[http://localhost:8080/example.ske](http://localhost:8080/example.ske)
-
----
-
-## ⚙️ Configuration
-
-Ske’s built-in server can be configured easily:
-
-```bash
-./ske serve --port 8080 --root ./examples
+./ske run hello
 ```
 
 ---
@@ -97,11 +73,11 @@ Ske’s built-in server can be configured easily:
 **Ske** combines clarity and expressiveness in a clean syntax:
 
 ```ske
-fn greet(name: string): string {
-    return "Hello, $name!"
+string hello(string name) {
+    return 'Hello ', name, '!'
 }
 
-print(greet("World"))
+print hello("World")
 ```
 
 ### Language Features
