@@ -132,6 +132,15 @@ fn (this Eval) eval_literal(l ast.LiteralExpr) !Value {
 	v := l.value
 
 	return match n {
+		'bool' {
+			if v == 'true' {
+				true
+			} else if v == 'false' {
+				false
+			} else {
+				error('Unknown boolean value ${v}')
+			}
+		}
 		'number' {
 			if v.contains('.') {
 				v.f64()
