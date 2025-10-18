@@ -45,8 +45,8 @@ fn test_float_conversion() {
 }
 
 fn test_string_conversion() {
-	assert Value(true).to_str() == '1'
-	assert Value(false).to_str() == '0'
+	assert Value(true).to_str() == 'true'
+	assert Value(false).to_str() == 'false'
 	assert Value(1).to_str() == '1'
 	assert Value(-55).to_str() == '-55'
 	assert Value(0).to_str() == '0'
