@@ -1,3 +1,15 @@
+if true {
+  print 'Always true'
+} else {
+  print 'Never false'
+}
+
+if false {
+  print 'Never false'
+} else {
+  print 'Always true'
+}
+
 string $c
 string $r
 

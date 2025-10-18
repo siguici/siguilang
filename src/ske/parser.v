@@ -51,10 +51,14 @@ pub fn (mut this Parser) parse_stmt() !Stmt {
 	} else if this.eat(.if) {
 		c := this.parse_expr()!
 		this.eat_or_fail(.lcbr, '{ expected after if condition')!
+		this.eat(.nl)
 		b := this.parse_block([TokenType.rcbr, TokenType.else])!
+		this.eat(.nl)
 		return if this.eat(.else) {
+			this.eat(.nl)
 			this.current()
 			this.eat_or_fail(.lcbr, '{ expected after esle')!
+			this.eat(.nl)
 			IfStmt{c, b, this.parse_block([TokenType.rcbr])!}
 		} else {
 			IfStmt{c, b, unsafe { nil }}
