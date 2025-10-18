@@ -158,7 +158,7 @@ pub fn (mut this Parser) parse_unary_expr() !Expr {
 pub fn (mut this Parser) parse_literal_expr() !Expr {
 	mut t := this.next()
 
-	if t.in([.name, .number, .string, .backticks]) {
+	if t.in([.name, .bool, .number, .string, .backticks]) {
 		return LiteralExpr{t.name(), t.val}
 	}
 
