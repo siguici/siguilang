@@ -1,16 +1,5 @@
-int $a
-int $b
 string $c
 string $r
-string $ls
-
-$a = 20 + -2 * (8 - 4) * 2
-$b = 5 + 9 / 3
-
-print $b / -$a * 3
-
-int p = 5**2**2
-print p
 
 $c = scan 'How old are you?', '\n> '
 
@@ -21,6 +10,3 @@ if $c {
 }
 
 print 'You are ', $c, ' year old and ', $r
-
-$ls = `ls -la`
-print $ls

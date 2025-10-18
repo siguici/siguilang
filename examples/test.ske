@@ -1,1 +1,12 @@
-print 'Hello World!'
+int $a
+int $b
+
+$a = 20 + -2 * (8 - 4) * 2
+$b = 5 + 9 / 3
+
+print $b / -$a * 3
+
+int p = 5**2**2
+print p
+
+print 'Enjoy Ske!'
