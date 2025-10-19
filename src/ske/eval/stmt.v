@@ -46,13 +46,14 @@ fn (mut this Eval) eval_if(s ast.IfStmt) ! {
 }
 
 fn (mut this Eval) eval_for(s ast.ForStmt) ! {
-	c := this.eval_cond(s.cond)!
-
-	for c {
+	i := this.eval_cond(s.cond)!
+	mut j := i
+	for j {
 		this.eval_block(s.left)!
+		j = this.eval_cond(s.cond)!
 	}
 
-	if !c && s.right != unsafe { nil } {
+	if !i && s.right != unsafe { nil } {
 		this.eval_block(s.right)!
 	}
 }

@@ -50,17 +50,6 @@ pub fn (mut this Parser) parse_block(delimiters []TokenType) !&Block {
 pub fn (mut this Parser) parse_stmt() !Stmt {
 	return if this.eat(.print) {
 		PrintStmt{this.parse_expr()!, this.position()}
-	} else if this.eat(.if) {
-		c := this.parse_expr()!
-		this.eat_or_fail(.lcbr, '{ expected after if condition')!
-		b := this.parse_block([TokenType.rcbr, TokenType.else])!
-		return if this.eat(.else) {
-			this.current()
-			this.eat_or_fail(.lcbr, '{ expected after esle')!
-			IfStmt{c, b, this.parse_block([TokenType.rcbr])!, this.position()}
-		} else {
-			IfStmt{c, b, unsafe { nil }, this.position()}
-		}
 	} else if this.eat(.for) {
 		c := this.parse_expr()!
 		this.eat_or_fail(.lcbr, '{ expected after for condition')!
@@ -71,6 +60,17 @@ pub fn (mut this Parser) parse_stmt() !Stmt {
 			ForStmt{c, b, this.parse_block([TokenType.rcbr])!, this.position()}
 		} else {
 			ForStmt{c, b, unsafe { nil }, this.position()}
+		}
+	} else if this.eat(.if) {
+		c := this.parse_expr()!
+		this.eat_or_fail(.lcbr, '{ expected after if condition')!
+		b := this.parse_block([TokenType.rcbr, TokenType.else])!
+		return if this.eat(.else) {
+			this.current()
+			this.eat_or_fail(.lcbr, '{ expected after esle')!
+			IfStmt{c, b, this.parse_block([TokenType.rcbr])!, this.position()}
+		} else {
+			IfStmt{c, b, unsafe { nil }, this.position()}
 		}
 	} else if this.current().is(.name) {
 		this.parse_decl()!
