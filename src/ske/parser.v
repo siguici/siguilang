@@ -35,6 +35,7 @@ pub fn (mut this Parser) parse() ![]Node {
 pub fn (mut this Parser) parse_block(delimiters []TokenType) !&Block {
 	mut s := []Stmt{}
 	for (this.remaining() > 0 && !this.current().in(delimiters)) {
+		this.eat_any([.semicolon, .nl])
 		s << this.parse_stmt()!
 		if !this.eat_any([.semicolon, .nl]) && !this.is_eof() {
 			return parser_error('; or \\n expected at the end of statement', this.current().pos)
@@ -52,14 +53,10 @@ pub fn (mut this Parser) parse_stmt() !Stmt {
 	} else if this.eat(.if) {
 		c := this.parse_expr()!
 		this.eat_or_fail(.lcbr, '{ expected after if condition')!
-		this.eat(.nl)
 		b := this.parse_block([TokenType.rcbr, TokenType.else])!
-		this.eat(.nl)
 		return if this.eat(.else) {
-			this.eat(.nl)
 			this.current()
 			this.eat_or_fail(.lcbr, '{ expected after esle')!
-			this.eat(.nl)
 			IfStmt{c, b, this.parse_block([TokenType.rcbr])!, this.position()}
 		} else {
 			IfStmt{c, b, unsafe { nil }, this.position()}
