@@ -1,7 +1,7 @@
 module ske
 
 import ske.core { Position, parser_error }
-import ske.ast { AssignExpr, BinaryExpr, Block, Decl, Expr, IfStmt, LiteralExpr, Node, PrintStmt, ScanExpr, Stmt, UnaryExpr, VarDecl }
+import ske.ast { AssignExpr, BinaryExpr, Block, Decl, Expr, ForStmt, IfStmt, LiteralExpr, Node, PrintStmt, ScanExpr, Stmt, UnaryExpr, VarDecl }
 
 pub fn parse(tokens []Token) ![]Node {
 	mut p := new_parser(tokens)
@@ -60,6 +60,17 @@ pub fn (mut this Parser) parse_stmt() !Stmt {
 			IfStmt{c, b, this.parse_block([TokenType.rcbr])!, this.position()}
 		} else {
 			IfStmt{c, b, unsafe { nil }, this.position()}
+		}
+	} else if this.eat(.for) {
+		c := this.parse_expr()!
+		this.eat_or_fail(.lcbr, '{ expected after for condition')!
+		b := this.parse_block([TokenType.rcbr, TokenType.else])!
+		return if this.eat(.else) {
+			this.current()
+			this.eat_or_fail(.lcbr, '{ expected after esle')!
+			ForStmt{c, b, this.parse_block([TokenType.rcbr])!, this.position()}
+		} else {
+			ForStmt{c, b, unsafe { nil }, this.position()}
 		}
 	} else if this.current().is(.name) {
 		this.parse_decl()!

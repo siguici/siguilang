@@ -6,7 +6,7 @@ pub const empty_node = Node(EmptyNode(0))
 
 pub type Node = Stmt | Block | EmptyNode
 pub type EmptyNode = u8
-pub type Stmt = Decl | PrintStmt | IfStmt | Expr
+pub type Stmt = Decl | PrintStmt | IfStmt | ForStmt | Expr
 pub type Decl = TypeDecl | VarDecl | ConstDecl | EnumDecl | FuncDecl | StructDecl
 pub type Expr = AssignExpr | BinaryExpr | UnaryExpr | LiteralExpr | ScanExpr
 
@@ -50,6 +50,14 @@ pub:
 }
 
 pub struct IfStmt {
+pub:
+	cond  Expr
+	left  Block
+	right &Block = unsafe { nil }
+	pos   Position
+}
+
+pub struct ForStmt {
 pub:
 	cond  Expr
 	left  Block

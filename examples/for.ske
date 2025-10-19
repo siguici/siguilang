@@ -1,0 +1,18 @@
+bool $c = true
+int $i
+
+for $c {
+  print $c, ' is true'
+  if $i = 5 {
+    $c = false
+  }
+  $i = $i + 1
+} else {
+  print $c, ' is never false'
+}
+
+for $c {
+  print $c, ' is not true'
+} else {
+  print $c, ' is false'
+}
