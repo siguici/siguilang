@@ -37,10 +37,10 @@ fn (mut this Eval) eval_cond(c ast.Expr) !bool {
 fn (mut this Eval) eval_assign(a ast.AssignExpr) !Value {
 	var_value := this.eval_expr(a.right)!
 	var_name := this.eval_name(a.left) or {
-		return runtime_error('Cannot assign ${var_value}: ${err}', a.pos)
+		return runtime_error('Cannot assign ${var_value}: ${err}', a.left.pos)
 	}
 
-	this.set_var(var_name, var_value, a.pos)!
+	this.set_var(var_name, var_value, a.left.pos)!
 
 	return var_value
 }
@@ -49,7 +49,7 @@ fn (mut this Eval) eval_binary(b ast.BinaryExpr) !BinaryValue {
 	return if b.op == ',' {
 		this.eval_concat(b.left, b.right)!
 	} else {
-		this.eval_calcul(b.op, b.left, b.right, b.pos)!
+		this.eval_calcul(b.op, b.left, b.right, b.left.pos)!
 	}
 }
 
@@ -117,12 +117,12 @@ fn (mut this Eval) eval_unary(u ast.UnaryExpr) !Value {
 						true
 					}
 					else {
-						runtime_error('`!` is only allowed on boolean value', u.pos)
+						runtime_error('`!` is only allowed on boolean value', u.expr.pos)
 					}
 				}
 			}
 			else {
-				runtime_error('Unknown operator ${o}', u.pos)
+				runtime_error('Unknown operator ${o}', u.expr.pos)
 			}
 		}
 	} else {

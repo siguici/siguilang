@@ -55,11 +55,12 @@ pub fn (mut this Eval) init_var(type string, name string, value Value, pos Posit
 pub fn (mut this Eval) set_var(name string, value Value, pos Position) ! {
 	if var_def := this.vars[name] {
 		if !var_def.mutable {
-			return runtime_error('Cannot modify read-only variable ${name}', pos)
+			return runtime_error('Cannot set constant ${name}. Use \$${name} instead.',
+				pos)
 		}
 		this.vars[name].value = value
 	} else {
-		return runtime_error('Undefined variable ${name}', pos)
+		return runtime_error('Cannot set variable ${name}. Define it before.', pos)
 	}
 }
 
@@ -67,7 +68,8 @@ pub fn (this Eval) get_var(name string, pos Position) !Value {
 	if var_def := this.vars[name] {
 		return var_def.value
 	} else {
-		return runtime_error('Undefined variable ${name}', pos)
+		kind := if name.starts_with('\$') { 'variable' } else { 'constant' }
+		return runtime_error('Undefined ${kind} ${name}', pos)
 	}
 }
 
