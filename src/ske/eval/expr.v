@@ -3,6 +3,7 @@ module eval
 import math
 import os
 import ske.ast
+import ske.core { Position, runtime_error }
 
 fn (mut this Eval) eval_expr(e ast.Expr) !Value {
 	return match e {
@@ -35,9 +36,11 @@ fn (mut this Eval) eval_cond(c ast.Expr) !bool {
 
 fn (mut this Eval) eval_assign(a ast.AssignExpr) !Value {
 	var_value := this.eval_expr(a.right)!
-	var_name := this.eval_name(a.left) or { panic('Cannot assign ${var_value}: ${err}') }
+	var_name := this.eval_name(a.left) or {
+		return runtime_error('Cannot assign ${var_value}: ${err}', a.pos)
+	}
 
-	this.set_var(var_name, var_value)!
+	this.set_var(var_name, var_value, a.pos)!
 
 	return var_value
 }
@@ -46,7 +49,7 @@ fn (mut this Eval) eval_binary(b ast.BinaryExpr) !BinaryValue {
 	return if b.op == ',' {
 		this.eval_concat(b.left, b.right)!
 	} else {
-		this.eval_calcul(b.op, b.left, b.right)!
+		this.eval_calcul(b.op, b.left, b.right, b.pos)!
 	}
 }
 
@@ -57,14 +60,14 @@ fn (mut this Eval) eval_concat(l ast.Expr, r ast.Expr) !string {
 	return lv + rv
 }
 
-fn (mut this Eval) eval_calcul(op string, l ast.Expr, r ast.Expr) !int {
+fn (mut this Eval) eval_calcul(op string, l ast.Expr, r ast.Expr, pos Position) !int {
 	lv := this.eval_expr(l)!.to_int()
 	rv := this.eval_expr(r)!.to_int()
 
-	return this.eval_op(op, lv, rv)
+	return this.eval_op(op, lv, rv, pos)
 }
 
-fn (this Eval) eval_op(o string, l int, r int) !int {
+fn (this Eval) eval_op(o string, l int, r int, pos Position) !int {
 	return match o {
 		'+' {
 			l + r
@@ -88,7 +91,7 @@ fn (this Eval) eval_op(o string, l int, r int) !int {
 			math.pow(l, r)
 		}
 		else {
-			error('Unknown operator ${o}')
+			runtime_error('Unknown operator ${o}', pos)
 		}
 	}
 }
@@ -114,12 +117,12 @@ fn (mut this Eval) eval_unary(u ast.UnaryExpr) !Value {
 						true
 					}
 					else {
-						error('`!` is only allowed on boolean value')
+						runtime_error('`!` is only allowed on boolean value', u.pos)
 					}
 				}
 			}
 			else {
-				error('Unknown operator ${o}')
+				runtime_error('Unknown operator ${o}', u.pos)
 			}
 		}
 	} else {
@@ -138,7 +141,7 @@ fn (this Eval) eval_literal(l ast.LiteralExpr) !Value {
 			} else if v == 'false' {
 				false
 			} else {
-				error('Unknown boolean value ${v}')
+				return runtime_error('Unknown boolean value ${v}', l.pos)
 			}
 		}
 		'number' {
@@ -149,7 +152,7 @@ fn (this Eval) eval_literal(l ast.LiteralExpr) !Value {
 			}
 		}
 		'name' {
-			this.get_var(v)!
+			this.get_var(v, l.pos)!
 		}
 		'string' {
 			v
@@ -158,16 +161,16 @@ fn (this Eval) eval_literal(l ast.LiteralExpr) !Value {
 			os.execute_or_exit(v).output
 		}
 		else {
-			error('Unknown literal ${n}')
+			runtime_error('Unknown literal ${n}', l.pos)
 		}
 	}
 }
 
 fn (mut this Eval) eval_name(e ast.Expr) !string {
 	return if e is ast.LiteralExpr && e.name == 'name' {
-		return e.value
+		e.value
 	} else {
-		error('Cannot use ${this.eval_expr(e)!} as name')
+		runtime_error('Cannot use ${this.eval_expr(e)!} as name', e.pos)
 	}
 }
 

@@ -1,6 +1,7 @@
 module eval
 
 import ske.ast
+import ske.core { runtime_error }
 
 fn (mut this Eval) decl(d ast.Decl) ! {
 	match d {
@@ -8,7 +9,8 @@ fn (mut this Eval) decl(d ast.Decl) ! {
 			this.decl_var(d.type, d.expr)!
 		}
 		else {
-			error('Not implemented')
+			// TODO
+			return error('${d} is not implemented')
 		}
 	}
 }
@@ -18,19 +20,19 @@ fn (mut this Eval) decl_var(type string, expr ast.Expr) ! {
 		ast.AssignExpr {
 			value := this.eval_expr(expr.right)!
 			name := this.eval_name(expr.left)!
-			this.init_var(type, name, value)!
+			this.init_var(type, name, value, expr.pos)!
 		}
 		ast.LiteralExpr {
 			name := if expr.name == 'name' {
 				expr.value
 			} else {
-				error('Cannot declare a variable with ${expr.name}')
-				''
+				return runtime_error('Cannot declare a variable with ${expr.name}', expr.pos)
 			}
-			this.init_var(type, name, Nil{})!
+			this.init_var(type, name, Nil{}, expr.pos)!
 		}
 		else {
-			error('Cannot declare variable of type ${type} with expression ${expr}')
+			return runtime_error('Cannot declare variable of type ${type} with expression ${expr}',
+				expr.pos)
 		}
 	}
 }

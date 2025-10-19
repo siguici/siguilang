@@ -1,6 +1,7 @@
 module eval
 
 import ske.ast
+import ske.core { Position, runtime_error }
 import ske.checker { is_bool, is_float, is_int }
 
 pub struct Var {
@@ -29,7 +30,7 @@ pub fn eval(nodes []ast.Node) ! {
 	ev.eval(nodes)!
 }
 
-pub fn (mut this Eval) init_var(type string, name string, value Value) ! {
+pub fn (mut this Eval) init_var(type string, name string, value Value, pos Position) ! {
 	var_type := Type.from(type)
 	is_valid := if value !is Nil && var_type is BuiltinType {
 		(var_type.is(.bool) && value.is_bool())
@@ -40,7 +41,8 @@ pub fn (mut this Eval) init_var(type string, name string, value Value) ! {
 		true
 	}
 	if !is_valid {
-		return error('Invalid type for variable ${name} (got ${value.type_name()} expected ${type})')
+		return runtime_error('Invalid type for variable ${name} (got ${value.type_name()} expected ${type})',
+			pos)
 	} else {
 		this.vars[name] = Var{
 			type:    Type.from(type)
@@ -50,22 +52,22 @@ pub fn (mut this Eval) init_var(type string, name string, value Value) ! {
 	}
 }
 
-pub fn (mut this Eval) set_var(name string, value Value) ! {
+pub fn (mut this Eval) set_var(name string, value Value, pos Position) ! {
 	if var_def := this.vars[name] {
 		if !var_def.mutable {
-			return error('Cannot modify read-only variable ${name}')
+			return runtime_error('Cannot modify read-only variable ${name}', pos)
 		}
 		this.vars[name].value = value
 	} else {
-		return error('Undefined variable ${name}')
+		return runtime_error('Undefined variable ${name}', pos)
 	}
 }
 
-pub fn (this Eval) get_var(name string) !Value {
-	return if var_def := this.vars[name] {
-		var_def.value
+pub fn (this Eval) get_var(name string, pos Position) !Value {
+	if var_def := this.vars[name] {
+		return var_def.value
 	} else {
-		error('Undefined variable ${name}')
+		return runtime_error('Undefined variable ${name}', pos)
 	}
 }
 
