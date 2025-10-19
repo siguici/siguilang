@@ -441,7 +441,7 @@ pub fn (mut this Scanner) scan() !Token {
 						this.token_if()
 					}
 					'for' {
-						this.token_if()
+						this.token_for()
 					}
 					'else' {
 						this.token_else()
