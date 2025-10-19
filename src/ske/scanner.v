@@ -1,6 +1,7 @@
 module ske
 
 import strings.textscanner
+import ske.core { Position, scanner_error }
 
 @[params]
 pub struct ScannerOptions {
@@ -655,7 +656,7 @@ pub fn (mut this Scanner) position() Position {
 }
 
 pub fn (mut this Scanner) position_n(n int) Position {
-	return new_position(
+	return Position.new(
 		file:   this.file
 		offset: this.pos
 		line:   this.line

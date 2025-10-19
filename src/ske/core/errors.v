@@ -1,4 +1,4 @@
-module ske
+module core
 
 struct SkeError {
 	Error

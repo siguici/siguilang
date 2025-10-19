@@ -1,5 +1,6 @@
 module ske
 
+import ske.core { Position, parser_error }
 import ske.ast { AssignExpr, BinaryExpr, Block, Decl, Expr, IfStmt, LiteralExpr, Node, PrintStmt, ScanExpr, Stmt, UnaryExpr, VarDecl }
 
 pub fn parse(tokens []Token) ![]Node {
@@ -42,12 +43,12 @@ pub fn (mut this Parser) parse_block(delimiters []TokenType) !&Block {
 	if !(delimiters.len == 1 && TokenType.eof in delimiters) {
 		this.eat_any_or_fail(delimiters, '${tokens_to_str(delimiters)} expected at the end of block')!
 	}
-	return &Block{s}
+	return &Block{s, this.position()}
 }
 
 pub fn (mut this Parser) parse_stmt() !Stmt {
 	return if this.eat(.print) {
-		PrintStmt{this.parse_expr()!}
+		PrintStmt{this.parse_expr()!, this.position()}
 	} else if this.eat(.if) {
 		c := this.parse_expr()!
 		this.eat_or_fail(.lcbr, '{ expected after if condition')!
@@ -59,9 +60,9 @@ pub fn (mut this Parser) parse_stmt() !Stmt {
 			this.current()
 			this.eat_or_fail(.lcbr, '{ expected after esle')!
 			this.eat(.nl)
-			IfStmt{c, b, this.parse_block([TokenType.rcbr])!}
+			IfStmt{c, b, this.parse_block([TokenType.rcbr])!, this.position()}
 		} else {
-			IfStmt{c, b, unsafe { nil }}
+			IfStmt{c, b, unsafe { nil }, this.position()}
 		}
 	} else if this.current().is(.name) {
 		this.parse_decl()!
@@ -92,7 +93,7 @@ pub fn (mut this Parser) parse_assign_expr() !Expr {
 	mut l := this.parse_scan_expr()!
 
 	for this.eat(.assign) {
-		l = AssignExpr{l, this.parse_scan_expr()!}
+		l = AssignExpr{l, this.parse_scan_expr()!, this.position()}
 	}
 
 	return l
@@ -100,7 +101,7 @@ pub fn (mut this Parser) parse_assign_expr() !Expr {
 
 pub fn (mut this Parser) parse_scan_expr() !Expr {
 	if this.eat(.scan) {
-		return ScanExpr{this.parse_concat_expr()!}
+		return ScanExpr{this.parse_concat_expr()!, this.position()}
 	}
 
 	return this.parse_concat_expr()!
@@ -111,7 +112,7 @@ pub fn (mut this Parser) parse_concat_expr() !Expr {
 
 	for this.eat(.comma) {
 		v := this.peek_back().val
-		l = BinaryExpr{l, this.parse_term_expr()!, v}
+		l = BinaryExpr{l, this.parse_term_expr()!, v, this.position()}
 	}
 
 	return l
@@ -122,7 +123,7 @@ pub fn (mut this Parser) parse_term_expr() !Expr {
 
 	for this.eat_any([.plus, .minus]) {
 		v := this.peek_back().val
-		l = BinaryExpr{l, this.parse_factor_expr()!, v}
+		l = BinaryExpr{l, this.parse_factor_expr()!, v, this.position()}
 	}
 
 	return l
@@ -133,7 +134,7 @@ pub fn (mut this Parser) parse_factor_expr() !Expr {
 
 	for this.eat_any([.mul, .div, .mod]) {
 		v := this.peek_back().val
-		l = BinaryExpr{l, this.parse_power_expr()!, v}
+		l = BinaryExpr{l, this.parse_power_expr()!, v, this.position()}
 	}
 
 	return l
@@ -144,7 +145,7 @@ pub fn (mut this Parser) parse_power_expr() !Expr {
 
 	for this.eat(.power) {
 		v := this.peek_back().val
-		r = BinaryExpr{this.parse_unary_expr()!, r, v}
+		r = BinaryExpr{this.parse_unary_expr()!, r, v, this.position()}
 	}
 
 	return r
@@ -153,7 +154,7 @@ pub fn (mut this Parser) parse_power_expr() !Expr {
 pub fn (mut this Parser) parse_unary_expr() !Expr {
 	if this.eat_any([.plus, .minus, .not]) {
 		v := this.peek_back().val
-		return UnaryExpr{this.parse_literal_expr()!, v}
+		return UnaryExpr{this.parse_literal_expr()!, v, this.position()}
 	}
 
 	return this.parse_literal_expr()!
@@ -163,7 +164,7 @@ pub fn (mut this Parser) parse_literal_expr() !Expr {
 	mut t := this.next()
 
 	if t.in([.name, .bool, .number, .string, .backticks]) {
-		return LiteralExpr{t.name(), t.val}
+		return LiteralExpr{t.name(), t.val, this.position()}
 	}
 
 	if t.is(.lpar) {
@@ -179,6 +180,10 @@ pub fn (mut this Parser) parse_literal_expr() !Expr {
 	}
 
 	return parser_error('Unexpected token ${t.val}', t.pos)
+}
+
+pub fn (this Parser) position() Position {
+	return this.current().pos
 }
 
 pub fn (mut this Parser) eat(type TokenType) bool {

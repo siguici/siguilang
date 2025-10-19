@@ -1,8 +1,9 @@
-module ske
+module core
 
 pub struct Position {
+pub:
 	file string
-mut:
+pub mut:
 	offset int
 	line   int
 	column int
@@ -10,6 +11,7 @@ mut:
 
 @[params]
 pub struct PositionOptions {
+pub:
 	file   string
 	offset int
 	line   int
@@ -18,10 +20,6 @@ pub struct PositionOptions {
 
 pub fn Position.new(options PositionOptions) Position {
 	return Position{options.file, options.offset, options.line, options.column}
-}
-
-pub fn new_position(options PositionOptions) Position {
-	return Position.new(options)
 }
 
 pub fn (mut p Position) next_line() Position {

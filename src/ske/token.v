@@ -1,5 +1,7 @@
 module ske
 
+import ske.core { Position }
+
 pub enum TokenType {
 	amp        // &
 	and        // &&
