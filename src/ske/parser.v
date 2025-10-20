@@ -32,7 +32,7 @@ pub fn (mut this Parser) parse() ![]Node {
 	return nodes
 }
 
-pub fn (mut this Parser) parse_block(delimiters []TokenType) !&Block {
+fn (mut this Parser) parse_block(delimiters []TokenType) !&Block {
 	mut s := []Stmt{}
 	for (this.remaining() > 0 && !this.current().in(delimiters)) {
 		this.eat_any([.semicolon, .nl])
@@ -47,7 +47,7 @@ pub fn (mut this Parser) parse_block(delimiters []TokenType) !&Block {
 	return &Block{s, this.position()}
 }
 
-pub fn (mut this Parser) parse_stmt() !Stmt {
+fn (mut this Parser) parse_stmt() !Stmt {
 	return if this.eat(.print) {
 		PrintStmt{this.parse_expr()!, this.position()}
 	} else if this.eat(.type) {
@@ -81,7 +81,7 @@ pub fn (mut this Parser) parse_stmt() !Stmt {
 	}
 }
 
-pub fn (mut this Parser) parse_decl() !Stmt {
+fn (mut this Parser) parse_decl() !Stmt {
 	return if this.current().is(.name) && this.peek().is(.name) {
 		Decl(this.parse_var_decl()!)
 	} else if this.current().is(.lpar) && this.peek().is(.rpar) && this.peek_n(2).is(.name)
@@ -95,13 +95,13 @@ pub fn (mut this Parser) parse_decl() !Stmt {
 	}
 }
 
-pub fn (mut this Parser) parse_var_decl() !VarDecl {
+fn (mut this Parser) parse_var_decl() !VarDecl {
 	var_type := this.current().val
 	this.advance()
 	return VarDecl{var_type, this.parse_expr()!, this.position()}
 }
 
-pub fn (mut this Parser) parse_list_decl() !ListDecl {
+fn (mut this Parser) parse_list_decl() !ListDecl {
 	this.eat_or_fail(.lpar, '( expected in list declaration')!
 	this.eat_or_fail(.rpar, ') expected after ( in list declaration')!
 	item_type := this.current().val
@@ -109,7 +109,7 @@ pub fn (mut this Parser) parse_list_decl() !ListDecl {
 	return ListDecl{item_type, this.parse_expr()!, this.position()}
 }
 
-pub fn (mut this Parser) parse_array_decl() !ArrayDecl {
+fn (mut this Parser) parse_array_decl() !ArrayDecl {
 	this.eat_or_fail(.lsbr, '[ expected in array declaration')!
 	key_type := this.current().val
 	this.advance()
@@ -119,12 +119,12 @@ pub fn (mut this Parser) parse_array_decl() !ArrayDecl {
 	return ArrayDecl{key_type, value_type, this.parse_expr()!, this.position()}
 }
 
-pub fn (mut this Parser) parse_expr() !Expr {
+fn (mut this Parser) parse_expr() !Expr {
 	this.eat(.nl)
 	return this.parse_assign_expr()!
 }
 
-pub fn (mut this Parser) parse_assign_expr() !Expr {
+fn (mut this Parser) parse_assign_expr() !Expr {
 	mut l := this.parse_scan_expr()!
 
 	for this.eat(.assign) {
@@ -134,7 +134,7 @@ pub fn (mut this Parser) parse_assign_expr() !Expr {
 	return l
 }
 
-pub fn (mut this Parser) parse_scan_expr() !Expr {
+fn (mut this Parser) parse_scan_expr() !Expr {
 	if this.eat(.scan) {
 		return ScanExpr{this.parse_concat_expr()!, this.position()}
 	}
@@ -142,7 +142,7 @@ pub fn (mut this Parser) parse_scan_expr() !Expr {
 	return this.parse_concat_expr()!
 }
 
-pub fn (mut this Parser) parse_concat_expr() !Expr {
+fn (mut this Parser) parse_concat_expr() !Expr {
 	mut l := this.parse_term_expr()!
 
 	for this.eat(.comma) {
@@ -153,7 +153,7 @@ pub fn (mut this Parser) parse_concat_expr() !Expr {
 	return l
 }
 
-pub fn (mut this Parser) parse_term_expr() !Expr {
+fn (mut this Parser) parse_term_expr() !Expr {
 	mut l := this.parse_factor_expr()!
 
 	for this.eat_any([.plus, .minus]) {
@@ -164,7 +164,7 @@ pub fn (mut this Parser) parse_term_expr() !Expr {
 	return l
 }
 
-pub fn (mut this Parser) parse_factor_expr() !Expr {
+fn (mut this Parser) parse_factor_expr() !Expr {
 	mut l := this.parse_power_expr()!
 
 	for this.eat_any([.mul, .div, .mod]) {
@@ -175,7 +175,7 @@ pub fn (mut this Parser) parse_factor_expr() !Expr {
 	return l
 }
 
-pub fn (mut this Parser) parse_power_expr() !Expr {
+fn (mut this Parser) parse_power_expr() !Expr {
 	mut r := this.parse_unary_expr()!
 
 	for this.eat(.power) {
@@ -186,7 +186,7 @@ pub fn (mut this Parser) parse_power_expr() !Expr {
 	return r
 }
 
-pub fn (mut this Parser) parse_unary_expr() !Expr {
+fn (mut this Parser) parse_unary_expr() !Expr {
 	if this.eat_any([.plus, .minus, .not]) {
 		v := this.peek_back().val
 		return UnaryExpr{this.parse_literal_expr()!, v, this.position()}
@@ -195,7 +195,7 @@ pub fn (mut this Parser) parse_unary_expr() !Expr {
 	return this.parse_literal_expr()!
 }
 
-pub fn (mut this Parser) parse_literal_expr() !Expr {
+fn (mut this Parser) parse_literal_expr() !Expr {
 	mut t := this.next()
 
 	if t.in([.name, .bool, .number, .string, .backticks]) {
@@ -217,11 +217,11 @@ pub fn (mut this Parser) parse_literal_expr() !Expr {
 	return parser_error('Unexpected token ${t.val}', t.pos)
 }
 
-pub fn (this Parser) position() Position {
+fn (this Parser) position() Position {
 	return this.current().pos
 }
 
-pub fn (mut this Parser) eat(type TokenType) bool {
+fn (mut this Parser) eat(type TokenType) bool {
 	if this.current().is(type) {
 		this.advance()
 		return true
@@ -229,7 +229,7 @@ pub fn (mut this Parser) eat(type TokenType) bool {
 	return false
 }
 
-pub fn (mut this Parser) eat_any(types []TokenType) bool {
+fn (mut this Parser) eat_any(types []TokenType) bool {
 	if this.current().in(types) {
 		this.advance()
 		return true
@@ -237,31 +237,31 @@ pub fn (mut this Parser) eat_any(types []TokenType) bool {
 	return false
 }
 
-pub fn (mut this Parser) eat_or_fail(type TokenType, msg string) !bool {
+fn (mut this Parser) eat_or_fail(type TokenType, msg string) !bool {
 	if this.eat(type) {
 		return true
 	}
 	return parser_error(msg, this.current().pos)
 }
 
-pub fn (mut this Parser) eat_any_or_fail(types []TokenType, msg string) !bool {
+fn (mut this Parser) eat_any_or_fail(types []TokenType, msg string) !bool {
 	if this.eat_any(types) {
 		return true
 	}
 	return parser_error(msg, this.current().pos)
 }
 
-pub fn (this &Parser) is_eof() bool {
+fn (this &Parser) is_eof() bool {
 	return this.peek().is(.eof)
 }
 
 @[inline]
-pub fn (this &Parser) remaining() int {
+fn (this &Parser) remaining() int {
 	return this.limit - this.offset
 }
 
 @[direct_array_access; inline]
-pub fn (mut this Parser) next() Token {
+fn (mut this Parser) next() Token {
 	o := this.offset++
 	if o < this.limit {
 		return this.tokens[o]
@@ -270,14 +270,14 @@ pub fn (mut this Parser) next() Token {
 }
 
 @[inline]
-pub fn (mut this Parser) skip() {
+fn (mut this Parser) skip() {
 	if this.offset < this.limit {
 		this.offset++
 	}
 }
 
 @[inline]
-pub fn (mut this Parser) skip_n(n int) {
+fn (mut this Parser) skip_n(n int) {
 	this.offset += n
 	if this.offset > this.limit {
 		this.offset = this.limit
@@ -285,12 +285,12 @@ pub fn (mut this Parser) skip_n(n int) {
 }
 
 @[direct_array_access; inline]
-pub fn (this &Parser) peek() Token {
+fn (this &Parser) peek() Token {
 	return this.peek_n(1)
 }
 
 @[direct_array_access; inline]
-pub fn (this &Parser) peek_n(n int) Token {
+fn (this &Parser) peek_n(n int) Token {
 	o := this.offset + n
 	if o < this.limit {
 		return this.tokens[o]
@@ -299,13 +299,13 @@ pub fn (this &Parser) peek_n(n int) Token {
 }
 
 @[inline]
-pub fn (mut this Parser) advance() {
+fn (mut this Parser) advance() {
 	if this.offset < this.limit {
 		this.offset++
 	}
 }
 
-pub fn (mut this Parser) advance_n(n int) {
+fn (mut this Parser) advance_n(n int) {
 	this.offset += n
 	if this.offset > this.limit {
 		this.offset = this.limit
@@ -313,13 +313,13 @@ pub fn (mut this Parser) advance_n(n int) {
 }
 
 @[inline]
-pub fn (mut this Parser) back() {
+fn (mut this Parser) back() {
 	if this.offset > 0 {
 		this.offset--
 	}
 }
 
-pub fn (mut this Parser) back_n(n int) {
+fn (mut this Parser) back_n(n int) {
 	this.offset -= n
 	if this.offset < 0 {
 		this.offset = 0
@@ -327,12 +327,12 @@ pub fn (mut this Parser) back_n(n int) {
 }
 
 @[direct_array_access; inline]
-pub fn (this &Parser) peek_back() Token {
+fn (this &Parser) peek_back() Token {
 	return this.peek_back_n(1)
 }
 
 @[direct_array_access; inline]
-pub fn (this &Parser) peek_back_n(n int) Token {
+fn (this &Parser) peek_back_n(n int) Token {
 	if this.offset >= n {
 		return this.tokens[this.offset - n]
 	}
@@ -340,7 +340,7 @@ pub fn (this &Parser) peek_back_n(n int) Token {
 }
 
 @[direct_array_access; inline]
-pub fn (this Parser) current() Token {
+fn (this Parser) current() Token {
 	if this.offset <= this.limit {
 		return this.tokens[this.offset]
 	}
@@ -348,16 +348,16 @@ pub fn (this Parser) current() Token {
 	return Token.eof(pos.next_column())
 }
 
-pub fn (mut this Parser) reset() {
+fn (mut this Parser) reset() {
 	this.offset = 0
 }
 
-pub fn (mut this Parser) goto_eof() {
+fn (mut this Parser) goto_eof() {
 	this.offset = this.limit
 }
 
 @[unsafe]
-pub fn (mut this Parser) free() {
+fn (mut this Parser) free() {
 	unsafe {
 		this.tokens.free()
 	}
