@@ -13,8 +13,9 @@ pub mut:
 
 pub struct Eval {
 mut:
-	vars map[string]Var
-	ctx  Context
+	types map[string]Type
+	vars  map[string]Var
+	ctx   Context
 }
 
 pub fn Eval.new() Eval {
@@ -28,6 +29,13 @@ pub fn new_eval() Eval {
 pub fn eval(nodes []ast.Node) ! {
 	mut ev := new_eval()
 	ev.eval(nodes)!
+}
+
+pub fn (mut this Eval) define_type(name string, type Type, pos Position) ! {
+	if defined := this.types[name] {
+		return runtime_error('Type ${name} as ${defined.str()} is already defined', pos)
+	}
+	this.types[name] = type
 }
 
 pub fn (mut this Eval) init_var(type Type, name string, value Value, pos Position) ! {

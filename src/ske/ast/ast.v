@@ -17,7 +17,9 @@ pub:
 }
 
 pub struct TypeDecl {
-	pos Position
+pub:
+	expr Expr
+	pos  Position
 }
 
 pub struct VarDecl {

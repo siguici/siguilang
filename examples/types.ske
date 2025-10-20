@@ -1,3 +1,5 @@
+type MyType = int
+
 int varint
 string varstring
 bool varbool

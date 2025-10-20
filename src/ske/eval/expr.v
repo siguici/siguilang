@@ -174,6 +174,14 @@ fn (mut this Eval) eval_name(e ast.Expr) !string {
 	}
 }
 
+fn (mut this Eval) eval_type(e ast.Expr) !Type {
+	if e is ast.LiteralExpr && e.name == 'name' {
+		return Type.from(e.value)
+	} else {
+		return runtime_error('Cannot use ${this.eval_expr(e)!} as type', e.pos)
+	}
+}
+
 fn (this Eval) eval_empty(node ast.EmptyNode) {
 	// TODO
 }

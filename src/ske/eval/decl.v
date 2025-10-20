@@ -5,6 +5,9 @@ import ske.core { runtime_error }
 
 fn (mut this Eval) decl(d ast.Decl) ! {
 	match d {
+		ast.TypeDecl {
+			this.decl_type(d.expr)!
+		}
 		ast.VarDecl {
 			this.decl_var(d.type, d.expr)!
 		}
@@ -17,6 +20,19 @@ fn (mut this Eval) decl(d ast.Decl) ! {
 		else {
 			// TODO
 			return error('${d} is not implemented')
+		}
+	}
+}
+
+fn (mut this Eval) decl_type(expr ast.Expr) ! {
+	match expr {
+		ast.AssignExpr {
+			name := this.eval_name(expr.left)!
+			type := this.eval_type(expr.right)!
+			this.define_type(name, type, expr.pos)!
+		}
+		else {
+			return runtime_error('Cannot declare type with expression ${expr}', expr.pos)
 		}
 	}
 }

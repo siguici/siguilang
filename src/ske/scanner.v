@@ -431,6 +431,9 @@ pub fn (mut this Scanner) scan() !Token {
 					'true', 'false' {
 						this.token_bool(id)
 					}
+					'type' {
+						this.token_type()
+					}
 					'print' {
 						this.token_print()
 					}

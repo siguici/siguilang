@@ -1,7 +1,7 @@
 module ske
 
 import ske.core { Position, parser_error }
-import ske.ast { ArrayDecl, AssignExpr, BinaryExpr, Block, Decl, Expr, ForStmt, IfStmt, ListDecl, LiteralExpr, Node, PrintStmt, ScanExpr, Stmt, UnaryExpr, VarDecl }
+import ske.ast { ArrayDecl, AssignExpr, BinaryExpr, Block, Decl, Expr, ForStmt, IfStmt, ListDecl, LiteralExpr, Node, PrintStmt, ScanExpr, Stmt, TypeDecl, UnaryExpr, VarDecl }
 
 pub fn parse(tokens []Token) ![]Node {
 	mut p := new_parser(tokens)
@@ -50,6 +50,8 @@ pub fn (mut this Parser) parse_block(delimiters []TokenType) !&Block {
 pub fn (mut this Parser) parse_stmt() !Stmt {
 	return if this.eat(.print) {
 		PrintStmt{this.parse_expr()!, this.position()}
+	} else if this.eat(.type) {
+		Decl(TypeDecl{this.parse_expr()!, this.position()})
 	} else if this.eat(.for) {
 		c := this.parse_expr()!
 		this.eat_or_fail(.lcbr, '{ expected after for condition')!
