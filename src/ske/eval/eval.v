@@ -30,22 +30,20 @@ pub fn eval(nodes []ast.Node) ! {
 	ev.eval(nodes)!
 }
 
-pub fn (mut this Eval) init_var(type string, name string, value Value, pos Position) ! {
-	var_type := Type.from(type)
-	is_valid := if value !is Nil && var_type is BuiltinType {
-		(var_type.is(.bool) && value.is_bool())
-			|| (var_type.is(.int) && value.is_int())
-			|| (var_type.is(.float) && value.is_float())
-			|| (var_type.is(.string) && value.is_string())
+pub fn (mut this Eval) init_var(type Type, name string, value Value, pos Position) ! {
+	is_valid := if value !is Nil && type is BuiltinType {
+		(type.is(.bool) && value.is_bool()) || (type.is(.int) && value.is_int())
+			|| (type.is(.float) && value.is_float())
+			|| (type.is(.string) && value.is_string())
 	} else {
 		true
 	}
 	if !is_valid {
-		return runtime_error('Invalid type for variable ${name} (got ${value.type_name()} expected ${type})',
+		return runtime_error('Invalid type for variable ${name} (got ${value.type_name()} expected ${type.str()})',
 			pos)
 	} else {
 		this.vars[name] = Var{
-			type:    Type.from(type)
+			type:    type
 			value:   value
 			mutable: name.starts_with('\$')
 		}

@@ -7,7 +7,7 @@ pub const empty_node = Node(EmptyNode(0))
 pub type Node = Stmt | Block | EmptyNode
 pub type EmptyNode = u8
 pub type Stmt = Decl | PrintStmt | IfStmt | ForStmt | Expr
-pub type Decl = TypeDecl | VarDecl | ConstDecl | EnumDecl | FuncDecl | StructDecl
+pub type Decl = TypeDecl | VarDecl | ListDecl | ArrayDecl | EnumDecl | FuncDecl | StructDecl
 pub type Expr = AssignExpr | BinaryExpr | UnaryExpr | LiteralExpr | ScanExpr
 
 pub struct Block {
@@ -27,8 +27,19 @@ pub:
 	pos  Position
 }
 
-pub struct ConstDecl {
-	pos Position
+pub struct ListDecl {
+pub:
+	item_type string
+	expr      Expr
+	pos       Position
+}
+
+pub struct ArrayDecl {
+pub:
+	key_type   string
+	value_type string
+	expr       Expr
+	pos        Position
 }
 
 pub struct EnumDecl {

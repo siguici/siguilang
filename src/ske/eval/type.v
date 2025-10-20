@@ -1,6 +1,6 @@
 module eval
 
-pub type Type = BuiltinType | NamedType | UnionType | IntersectionType
+pub type Type = BuiltinType | NamedType | ListType | ArrayType | UnionType | IntersectionType
 
 @[params]
 pub struct TypeOption {
@@ -18,6 +18,17 @@ pub enum BuiltinType {
 pub struct NamedType {
 	TypeOption
 	name string
+}
+
+pub struct ListType {
+	TypeOption
+	item_type Type
+}
+
+pub struct ArrayType {
+	TypeOption
+	key_type   Type
+	value_type Type
 }
 
 struct GroupedType {

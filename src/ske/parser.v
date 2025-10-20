@@ -1,7 +1,7 @@
 module ske
 
 import ske.core { Position, parser_error }
-import ske.ast { AssignExpr, BinaryExpr, Block, Decl, Expr, ForStmt, IfStmt, LiteralExpr, Node, PrintStmt, ScanExpr, Stmt, UnaryExpr, VarDecl }
+import ske.ast { ArrayDecl, AssignExpr, BinaryExpr, Block, Decl, Expr, ForStmt, IfStmt, ListDecl, LiteralExpr, Node, PrintStmt, ScanExpr, Stmt, UnaryExpr, VarDecl }
 
 pub fn parse(tokens []Token) ![]Node {
 	mut p := new_parser(tokens)
@@ -72,7 +72,7 @@ pub fn (mut this Parser) parse_stmt() !Stmt {
 		} else {
 			IfStmt{c, b, unsafe { nil }, this.position()}
 		}
-	} else if this.current().is(.name) {
+	} else if this.current().in([.name, .lpar, .lsbr, .lcbr]) {
 		this.parse_decl()!
 	} else {
 		Stmt(this.parse_expr()!)
@@ -81,15 +81,40 @@ pub fn (mut this Parser) parse_stmt() !Stmt {
 
 pub fn (mut this Parser) parse_decl() !Stmt {
 	return if this.current().is(.name) && this.peek().is(.name) {
-		decl_type := this.current().val
-		this.advance()
-		Decl(VarDecl{
-			type: decl_type
-			expr: this.parse_expr()!
-		})
+		Decl(this.parse_var_decl()!)
+	} else if this.current().is(.lpar) && this.peek().is(.rpar) && this.peek_n(2).is(.name)
+		&& this.peek_n(3).is(.name) {
+		Decl(this.parse_list_decl()!)
+	} else if this.current().is(.lsbr) && this.peek().is(.name) && this.peek_n(2).is(.rsbr)
+		&& this.peek_n(3).is(.name) && this.peek_n(4).is(.name) {
+		Decl(this.parse_array_decl()!)
 	} else {
 		this.parse_expr()!
 	}
+}
+
+pub fn (mut this Parser) parse_var_decl() !VarDecl {
+	var_type := this.current().val
+	this.advance()
+	return VarDecl{var_type, this.parse_expr()!, this.position()}
+}
+
+pub fn (mut this Parser) parse_list_decl() !ListDecl {
+	this.eat_or_fail(.lpar, '( expected in list declaration')!
+	this.eat_or_fail(.rpar, ') expected after ( in list declaration')!
+	item_type := this.current().val
+	this.advance()
+	return ListDecl{item_type, this.parse_expr()!, this.position()}
+}
+
+pub fn (mut this Parser) parse_array_decl() !ArrayDecl {
+	this.eat_or_fail(.lsbr, '[ expected in array declaration')!
+	key_type := this.current().val
+	this.advance()
+	this.eat_or_fail(.rsbr, '] expected after key type in array declaration')!
+	value_type := this.current().val
+	this.advance()
+	return ArrayDecl{key_type, value_type, this.parse_expr()!, this.position()}
 }
 
 pub fn (mut this Parser) parse_expr() !Expr {

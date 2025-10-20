@@ -1,0 +1,5 @@
+int varint
+string varstring
+bool varbool
+[int]string array
+()int list
