@@ -26,32 +26,25 @@ pub fn new_parser(tokens []Token) Parser {
 pub fn (mut this Parser) parse() ![]Node {
 	mut nodes := []Node{}
 	for !this.is_eof() {
-		nodes << this.parse_block([TokenType.eof])!
+		nodes << this.parse_top_stmt()!
 		this.next()
 	}
 	return nodes
 }
 
-fn (mut this Parser) parse_block(delimiters []TokenType) !&Block {
-	mut s := []Stmt{}
-	for (this.remaining() > 0 && !this.current().in(delimiters)) {
-		this.eat_any([.semicolon, .nl])
-		s << this.parse_stmt()!
-		if !this.eat_any([.semicolon, .nl]) && !this.is_eof() {
-			return parser_error('; or \\n expected at the end of statement', this.current().pos)
-		}
+fn (mut this Parser) parse_top_stmt() !Stmt {
+	return if this.eat(.type) {
+		Decl(TypeDecl{this.parse_expr()!, this.position()})
+	} else if this.current().in([.name, .lpar, .lsbr, .lcbr]) {
+		this.parse_decl()!
+	} else {
+		this.parse_stmt()!
 	}
-	if !(delimiters.len == 1 && TokenType.eof in delimiters) {
-		this.eat_any_or_fail(delimiters, '${tokens_to_str(delimiters)} expected at the end of block')!
-	}
-	return &Block{s, this.position()}
 }
 
 fn (mut this Parser) parse_stmt() !Stmt {
 	return if this.eat(.print) {
 		PrintStmt{this.parse_expr()!, this.position()}
-	} else if this.eat(.type) {
-		Decl(TypeDecl{this.parse_expr()!, this.position()})
 	} else if this.eat(.for) {
 		c := this.parse_expr()!
 		this.eat_or_fail(.lcbr, '{ expected after for condition')!
@@ -74,11 +67,24 @@ fn (mut this Parser) parse_stmt() !Stmt {
 		} else {
 			IfStmt{c, b, unsafe { nil }, this.position()}
 		}
-	} else if this.current().in([.name, .lpar, .lsbr, .lcbr]) {
-		this.parse_decl()!
 	} else {
 		Stmt(this.parse_expr()!)
 	}
+}
+
+fn (mut this Parser) parse_block(delimiters []TokenType) !&Block {
+	mut s := []Stmt{}
+	for (this.remaining() > 0 && !this.current().in(delimiters)) {
+		this.eat_any([.semicolon, .nl])
+		s << this.parse_stmt()!
+		if !this.eat_any([.semicolon, .nl]) && !this.is_eof() {
+			return parser_error('; or \\n expected at the end of statement', this.current().pos)
+		}
+	}
+	if !(delimiters.len == 1 && TokenType.eof in delimiters) {
+		this.eat_any_or_fail(delimiters, '${tokens_to_str(delimiters)} expected at the end of block')!
+	}
+	return &Block{s, this.position()}
 }
 
 fn (mut this Parser) parse_decl() !Stmt {
