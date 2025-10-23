@@ -115,22 +115,6 @@ pub enum TokenType {
 	type
 	unset
 	use
-
-	// PHP Keywords
-	class
-	const
-	declare
-	define
-	foreach
-	from
-	funtion
-	implements
-	interface
-	namespace
-	switch
-	trait
-	var
-	yield
 }
 
 @[params]
