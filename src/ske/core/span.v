@@ -17,12 +17,12 @@ pub fn Span.empty() Span {
 	return Span.new(Position.new(), Position.new())
 }
 
-pub fn Span.from_position(p Position) Span {
-	return Span.new(p, Position.new())
+pub fn (s Span) from_position(p Position) Span {
+	return Span.new(p, s.start)
 }
 
-pub fn Span.to_position(p Position) Span {
-	return Span.new(Position.new(), p)
+pub fn (s Span) to_position(p Position) Span {
+	return Span.new(s.end, p)
 }
 
 pub fn (s Span) is_empty() bool {

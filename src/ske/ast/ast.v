@@ -1,6 +1,6 @@
 module ast
 
-import ske.core { Position }
+import ske.core { Span }
 
 pub const empty_node = Node(EmptyNode(0))
 
@@ -13,27 +13,27 @@ pub type Expr = AssignExpr | BinaryExpr | UnaryExpr | LiteralExpr | ScanExpr
 pub struct Block {
 pub:
 	stmts []Stmt
-	pos   Position
+	span  Span
 }
 
 pub struct TypeDecl {
 pub:
 	expr Expr
-	pos  Position
+	span Span
 }
 
 pub struct VarDecl {
 pub:
 	type string
 	expr Expr
-	pos  Position
+	span Span
 }
 
 pub struct ListDecl {
 pub:
 	item_type string
 	expr      Expr
-	pos       Position
+	span      Span
 }
 
 pub struct ArrayDecl {
@@ -41,25 +41,25 @@ pub:
 	key_type   string
 	value_type string
 	expr       Expr
-	pos        Position
+	span       Span
 }
 
 pub struct EnumDecl {
-	pos Position
+	span Span
 }
 
 pub struct FuncDecl {
-	pos Position
+	span Span
 }
 
 pub struct StructDecl {
-	pos Position
+	span Span
 }
 
 pub struct PrintStmt {
 pub:
 	expr Expr
-	pos  Position
+	span Span
 }
 
 pub struct IfStmt {
@@ -67,7 +67,7 @@ pub:
 	cond  Expr
 	left  Block
 	right &Block = unsafe { nil }
-	pos   Position
+	span  Span
 }
 
 pub struct ForStmt {
@@ -75,20 +75,20 @@ pub:
 	cond  Expr
 	left  Block
 	right &Block = unsafe { nil }
-	pos   Position
+	span  Span
 }
 
 pub struct ScanExpr {
 pub:
 	prompt Expr
-	pos    Position
+	span   Span
 }
 
 pub struct AssignExpr {
 pub:
 	left  Expr
 	right Expr
-	pos   Position
+	span  Span
 }
 
 pub struct BinaryExpr {
@@ -96,19 +96,19 @@ pub:
 	left  Expr
 	right Expr
 	op    string
-	pos   Position
+	span  Span
 }
 
 pub struct UnaryExpr {
 pub:
 	expr Expr
 	op   string
-	pos  Position
+	span Span
 }
 
 pub struct LiteralExpr {
 pub:
 	name  string
 	value string
-	pos   Position
+	span  Span
 }

@@ -31,26 +31,30 @@ pub fn (p Position) is_empty() bool {
 	return p.offset == 0
 }
 
-pub fn (mut p Position) next_line() {
+pub fn (mut p Position) next_line() Position {
 	p.offset++
 	p.line++
 	p.column = 0
+	return p
 }
 
-pub fn (mut p Position) next_line_n(n int) {
+pub fn (mut p Position) next_line_n(n int) Position {
 	p.offset += n
 	p.line += n
 	p.column = 0
+	return p
 }
 
-pub fn (mut p Position) next_column() {
+pub fn (mut p Position) next_column() Position {
 	p.offset++
 	p.column++
+	return p
 }
 
-pub fn (mut p Position) next_column_n(n int) {
+pub fn (mut p Position) next_column_n(n int) Position {
 	p.offset += n
 	p.column += n
+	return p
 }
 
 pub fn max_position(a Position, b Position) Position {

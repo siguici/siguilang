@@ -29,10 +29,10 @@ fn (mut this Eval) decl_type(expr ast.Expr) ! {
 		ast.AssignExpr {
 			name := this.eval_name(expr.left)!
 			type := this.eval_type(expr.right)!
-			this.define_type(name, type, expr.pos)!
+			this.define_type(name, type, expr.span)!
 		}
 		else {
-			return runtime_error('Cannot declare type with expression ${expr}', expr.pos)
+			return runtime_error('Cannot declare type with expression ${expr}', span: expr.span)
 		}
 	}
 }
@@ -42,19 +42,20 @@ fn (mut this Eval) decl_var(type string, expr ast.Expr) ! {
 		ast.AssignExpr {
 			name := this.eval_name(expr.left)!
 			value := this.eval_expr(expr.right)!
-			this.init_var(Type.from(type), name, value, expr.pos)!
+			this.init_var(Type.from(type), name, value, expr.span)!
 		}
 		ast.LiteralExpr {
 			name := if expr.name == 'name' {
 				expr.value
 			} else {
-				return runtime_error('Cannot declare a variable with ${expr.name}', expr.pos)
+				return runtime_error('Cannot declare a variable with ${expr.name}', span: expr.span)
 			}
-			this.init_var(Type.from(type), name, Nil{}, expr.pos)!
+			this.init_var(Type.from(type), name, Nil{}, expr.span)!
 		}
 		else {
 			return runtime_error('Cannot declare variable of type ${type} with expression ${expr}',
-				expr.pos)
+				span: expr.span
+			)
 		}
 	}
 }
@@ -67,20 +68,22 @@ fn (mut this Eval) decl_list(item_type string, expr ast.Expr) ! {
 		ast.AssignExpr {
 			name := this.eval_name(expr.left)!
 			value := this.eval_expr(expr.right)!
-			this.init_var(type, name, value, expr.pos)!
+			this.init_var(type, name, value, expr.span)!
 		}
 		ast.LiteralExpr {
 			name := if expr.name == 'name' {
 				expr.value
 			} else {
 				return runtime_error('Cannot declare a list of type ()${item_type} with ${expr.name}',
-					expr.pos)
+					span: expr.span
+				)
 			}
-			this.init_var(type, name, Nil{}, expr.pos)!
+			this.init_var(type, name, Nil{}, expr.span)!
 		}
 		else {
 			return runtime_error('Cannot declare list of type ()${item_type} with expression ${expr}',
-				expr.pos)
+				span: expr.span
+			)
 		}
 	}
 }
@@ -94,20 +97,22 @@ fn (mut this Eval) decl_array(key_type string, value_type string, expr ast.Expr)
 		ast.AssignExpr {
 			name := this.eval_name(expr.left)!
 			value := this.eval_expr(expr.right)!
-			this.init_var(type, name, value, expr.pos)!
+			this.init_var(type, name, value, expr.span)!
 		}
 		ast.LiteralExpr {
 			name := if expr.name == 'name' {
 				expr.value
 			} else {
 				return runtime_error('Cannot declare an array of type [${key_type}]${value_type} with ${expr.name}',
-					expr.pos)
+					span: expr.span
+				)
 			}
-			this.init_var(type, name, Nil{}, expr.pos)!
+			this.init_var(type, name, Nil{}, expr.span)!
 		}
 		else {
 			return runtime_error('Cannot declare an array of type [${key_type}]${value_type} with expression ${expr}',
-				expr.pos)
+				span: expr.span
+			)
 		}
 	}
 }
