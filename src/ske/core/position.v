@@ -18,19 +18,85 @@ pub:
 	column int
 }
 
-pub fn Position.new(options PositionOptions) Position {
-	return Position{options.file, options.offset, options.line, options.column}
+pub fn Position.new(opts PositionOptions) Position {
+	return Position{
+		file:   opts.file
+		offset: opts.offset
+		line:   opts.line
+		column: opts.column
+	}
 }
 
-pub fn (mut p Position) next_line() Position {
+pub fn (p Position) is_empty() bool {
+	return p.offset == 0
+}
+
+pub fn (mut p Position) next_line() {
 	p.offset++
 	p.line++
 	p.column = 0
-	return p
 }
 
-pub fn (mut p Position) next_column() Position {
+pub fn (mut p Position) next_line_n(n int) {
+	p.offset += n
+	p.line += n
+	p.column = 0
+}
+
+pub fn (mut p Position) next_column() {
 	p.offset++
 	p.column++
-	return p
+}
+
+pub fn (mut p Position) next_column_n(n int) {
+	p.offset += n
+	p.column += n
+}
+
+pub fn max_position(a Position, b Position) Position {
+	if a.file != b.file {
+		return if a.offset > b.offset { a } else { b }
+	}
+	if a.line != b.line {
+		return if a.line > b.line { a } else { b }
+	}
+	if a.column != b.column {
+		return if a.column > b.column { a } else { b }
+	}
+	return if a.offset > b.offset { a } else { b }
+}
+
+pub fn min_position(a Position, b Position) Position {
+	if a.file != b.file {
+		return if a.offset < b.offset { a } else { b }
+	}
+	if a.line != b.line {
+		return if a.line < b.line { a } else { b }
+	}
+	if a.column != b.column {
+		return if a.column < b.column { a } else { b }
+	}
+	return if a.offset < b.offset { a } else { b }
+}
+
+pub fn (a Position) + (b Position) Position {
+	return max_position(a, b)
+}
+
+pub fn (a Position) - (b Position) Position {
+	return min_position(a, b)
+}
+
+pub fn (a Position) < (b Position) bool {
+	if a.file != b.file {
+		return false
+	}
+	return a.line < b.line || (a.line == b.line && a.column < b.column)
+}
+
+pub fn (a Position) == (b Position) bool {
+	if a.file != b.file {
+		return false
+	}
+	return a.line == b.line && a.column == b.column
 }
