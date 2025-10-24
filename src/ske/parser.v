@@ -77,12 +77,12 @@ fn (mut this Parser) parse_block(delimiters []TokenType) !&Block {
 	for (this.remaining() > 0 && !this.current().in(delimiters)) {
 		this.eat_any([.semicolon, .nl])
 		s << this.parse_stmt()!
-		if !this.eat_any([.semicolon, .nl]) && !this.is_eof() {
-			return parser_error('; or \\n expected at the end of statement', this.current().pos)
+		if !this.is_eof() {
+			this.expect_any([.semicolon, .nl])!
 		}
 	}
 	if !(delimiters.len == 1 && TokenType.eof in delimiters) {
-		this.eat_any_or_fail(delimiters, '${tokens_to_str(delimiters)} expected at the end of block')!
+		this.expect_any(delimiters)!
 	}
 	return &Block{s, this.position()}
 }
@@ -226,6 +226,10 @@ fn (mut this Parser) expect(type TokenType) !Token {
 	return this.eat_or_fail(type, '${token_to_str(type)} expected but ${this.current().val} provided')!
 }
 
+fn (mut this Parser) expect_any(types []TokenType) !Token {
+	return this.eat_any_or_fail(types, '${tokens_to_str(types)} expected but ${this.current().val} provided')!
+}
+
 fn (mut this Parser) eat(type TokenType) bool {
 	if this.current().is(type) {
 		this.advance()
@@ -250,11 +254,12 @@ fn (mut this Parser) eat_or_fail(type TokenType, msg string) !Token {
 	return parser_error(msg, token.pos)
 }
 
-fn (mut this Parser) eat_any_or_fail(types []TokenType, msg string) !bool {
+fn (mut this Parser) eat_any_or_fail(types []TokenType, msg string) !Token {
+	token := this.current()
 	if this.eat_any(types) {
-		return true
+		return token
 	}
-	return parser_error(msg, this.current().pos)
+	return parser_error(msg, token.pos)
 }
 
 fn (this &Parser) is_eof() bool {
