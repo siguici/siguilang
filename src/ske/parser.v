@@ -47,22 +47,22 @@ fn (mut this Parser) parse_stmt() !Stmt {
 		PrintStmt{this.parse_expr()!, this.position()}
 	} else if this.eat(.for) {
 		c := this.parse_expr()!
-		this.eat_or_fail(.lcbr, '{ expected after for condition')!
+		this.expect(.lcbr)!
 		b := this.parse_block([TokenType.rcbr, TokenType.else])!
 		return if this.eat(.else) {
 			this.current()
-			this.eat_or_fail(.lcbr, '{ expected after esle')!
+			this.expect(.lcbr)!
 			ForStmt{c, b, this.parse_block([TokenType.rcbr])!, this.position()}
 		} else {
 			ForStmt{c, b, unsafe { nil }, this.position()}
 		}
 	} else if this.eat(.if) {
 		c := this.parse_expr()!
-		this.eat_or_fail(.lcbr, '{ expected after if condition')!
+		this.expect(.lcbr)!
 		b := this.parse_block([TokenType.rcbr, TokenType.else])!
 		return if this.eat(.else) {
 			this.current()
-			this.eat_or_fail(.lcbr, '{ expected after esle')!
+			this.expect(.lcbr)!
 			IfStmt{c, b, this.parse_block([TokenType.rcbr])!, this.position()}
 		} else {
 			IfStmt{c, b, unsafe { nil }, this.position()}
@@ -108,18 +108,18 @@ fn (mut this Parser) parse_var_decl() !VarDecl {
 }
 
 fn (mut this Parser) parse_list_decl() !ListDecl {
-	this.eat_or_fail(.lpar, '( expected in list declaration')!
-	this.eat_or_fail(.rpar, ') expected after ( in list declaration')!
+	this.expect(.lpar)!
+	this.expect(.rpar)!
 	item_type := this.current().val
 	this.advance()
 	return ListDecl{item_type, this.parse_expr()!, this.position()}
 }
 
 fn (mut this Parser) parse_array_decl() !ArrayDecl {
-	this.eat_or_fail(.lsbr, '[ expected in array declaration')!
+	this.expect(.lsbr)!
 	key_type := this.current().val
 	this.advance()
-	this.eat_or_fail(.rsbr, '] expected after key type in array declaration')!
+	this.expect(.rsbr)!
 	value_type := this.current().val
 	this.advance()
 	return ArrayDecl{key_type, value_type, this.parse_expr()!, this.position()}
@@ -210,13 +210,8 @@ fn (mut this Parser) parse_literal_expr() !Expr {
 
 	if t.is(.lpar) {
 		mut expr := this.parse_expr()!
-		nt := this.current()
-		if !nt.is(.rpar) {
-			return parser_error(') expected but ${nt.val} provided', t.pos)
-		}
-
+		this.expect(.rpar)!
 		this.next()
-
 		return expr
 	}
 
@@ -225,6 +220,10 @@ fn (mut this Parser) parse_literal_expr() !Expr {
 
 fn (this Parser) position() Position {
 	return this.current().pos
+}
+
+fn (mut this Parser) expect(type TokenType) !Token {
+	return this.eat_or_fail(type, '${token_to_str(type)} expected but ${this.current().val} provided')!
 }
 
 fn (mut this Parser) eat(type TokenType) bool {
@@ -243,11 +242,12 @@ fn (mut this Parser) eat_any(types []TokenType) bool {
 	return false
 }
 
-fn (mut this Parser) eat_or_fail(type TokenType, msg string) !bool {
+fn (mut this Parser) eat_or_fail(type TokenType, msg string) !Token {
+	token := this.current()
 	if this.eat(type) {
-		return true
+		return token
 	}
-	return parser_error(msg, this.current().pos)
+	return parser_error(msg, token.pos)
 }
 
 fn (mut this Parser) eat_any_or_fail(types []TokenType, msg string) !bool {
